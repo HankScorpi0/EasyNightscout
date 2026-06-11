@@ -28,9 +28,7 @@ La opcion ideal para personas no tecnicas es usar el flujo oficial de Cloudflare
 
 Boton oficial de Cloudflare:
 
-```md
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=TU_URL_DE_REPO_PUBLICO)
-```
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite)
 
 Cuando este proyecto este en GitHub o GitLab publico, ese boton permitira desplegarlo en pocos clics desde el navegador. Cloudflare recomienda este flujo para reducir la configuracion manual.
 

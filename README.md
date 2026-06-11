@@ -28,9 +28,7 @@ The best option for non-technical users is the official Cloudflare flow with a p
 
 Official Cloudflare button:
 
-```md
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=YOUR_PUBLIC_REPO_URL)
-```
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite)
 
 Once this project is hosted in a public GitHub or GitLab repository, that button will let you deploy it in a few clicks from the browser. Cloudflare recommends this flow to reduce manual configuration.
 
