@@ -5,46 +5,46 @@ function formatElapsed(date: number, now: number): string {
   const minutes = Math.floor(deltaMs / 60000);
 
   if (minutes < 1) {
-    return "menos de 1 minuto";
+    return "less than 1 minute";
   }
 
   if (minutes === 1) {
-    return "1 minuto";
+    return "1 minute";
   }
 
   if (minutes < 60) {
-    return `${minutes} minutos`;
+    return `${minutes} minutes`;
   }
 
   const hours = Math.floor(minutes / 60);
   if (hours === 1) {
-    return "1 hora";
+    return "1 hour";
   }
 
-  return `${hours} horas`;
+  return `${hours} hours`;
 }
 
 export function renderHealthPage(view: HealthViewModel): string {
-  const exampleUrl = `https://TU_API_SECRET@${view.baseUrl.replace(/^https?:\/\//, "")}/api/v1/`;
+  const exampleUrl = `https://YOUR_API_SECRET@${view.baseUrl.replace(/^https?:\/\//, "")}/api/v1/`;
   const latestBlock = view.latest
     ? `
       <section>
-        <h2>Ultima lectura</h2>
+        <h2>Latest reading</h2>
         <p class="reading">${view.latest.sgv} mg/dL</p>
-        <p>Recibida hace: ${formatElapsed(view.latest.date, Date.now())}</p>
-        <p>Direccion: ${view.latest.direction ?? "Sin dato"}</p>
+        <p>Received: ${formatElapsed(view.latest.date, Date.now())} ago</p>
+        <p>Direction: ${view.latest.direction ?? "No data"}</p>
       </section>
     `
     : `
       <section>
-        <h2>Todavia no he recibido lecturas.</h2>
-        <p>Configura xDrip+ con esta URL:</p>
+        <h2>No readings received yet.</h2>
+        <p>Configure xDrip+ with this URL:</p>
         <code>${exampleUrl}</code>
       </section>
     `;
 
   return `<!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -92,13 +92,13 @@ export function renderHealthPage(view: HealthViewModel): string {
   </head>
   <body>
     <main>
-      <h1>TinyScout Lite esta funcionando <span class="ok">OK</span></h1>
-      <p>Servidor secundario/recovery para lecturas CGM compatibles con Nightscout.</p>
+      <h1>TinyScout Lite is running <span class="ok">OK</span></h1>
+      <p>Secondary/recovery server for Nightscout-compatible CGM readings.</p>
       ${latestBlock}
       <section>
-        <h2>Estado</h2>
-        <p>Lecturas guardadas: ${view.count}</p>
-        <p><a href="/api/v1/status.json">Ver status JSON</a></p>
+        <h2>Status</h2>
+        <p>Stored readings: ${view.count}</p>
+        <p><a href="/api/v1/status.json">View status JSON</a></p>
       </section>
     </main>
   </body>

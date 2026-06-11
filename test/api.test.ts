@@ -109,6 +109,6 @@ describe("api", () => {
     expect(response.status).toBe(200);
     const html = await response.text();
     expect(html).toContain("TinyScout Lite");
-    expect(html).toContain("Lecturas guardadas");
+    expect(html).toContain("Stored readings");
   });
 });

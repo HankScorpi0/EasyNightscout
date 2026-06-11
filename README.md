@@ -1,112 +1,114 @@
 # TinyScout Lite
 
-TinyScout Lite es un servidor minimo compatible con una parte de la API de Nightscout. Está pensado como sistema secundario o de recovery para recibir lecturas CGM desde xDrip+ y dejarlas disponibles para apps compatibles con Nightscout.
+TinyScout Lite is a minimal server compatible with part of the Nightscout API. It is designed as a secondary or recovery system to receive CGM readings from xDrip+ and make them available to Nightscout-compatible apps.
 
-## Lo que si es
+Spanish version: see [README.es.md](README.es.md).
 
-- Un Worker ligero en Cloudflare.
-- Un receptor de lecturas `entries`.
-- Un visor rapido de salud en `/health`.
-- Una opcion barata o gratuita para tener un respaldo sencillo.
+## What It Is
 
-## Lo que no es
+- A lightweight Cloudflare Worker.
+- A receiver for `entries` readings.
+- A quick health view at `/health`.
+- A low-cost or free option for simple backup access.
 
-- No es Nightscout completo.
-- No es un dispositivo medico.
-- No es una fuente principal para decisiones clinicas.
-- No guarda tratamientos reales, bolos, perfiles reales ni datos personales.
+## What It Is Not
 
-## Advertencia importante
+- It is not full Nightscout.
+- It is not a medical device.
+- It is not a primary source for clinical decisions.
+- It does not store real treatments, boluses, real profiles, or personal data.
 
-Usalo solo como sistema secundario/recovery. No debe utilizarse para tomar decisiones clinicas, dosificacion o tratamiento.
+## Important Warning
 
-## Despliegue super sencillo
+Use it only as a secondary or recovery system. It must not be used for clinical decisions, dosing, or treatment.
 
-La opcion ideal para personas no tecnicas es usar el flujo oficial de Cloudflare con un repo publico y un boton `Deploy to Cloudflare`.
+## Very Simple Deployment
 
-Boton oficial de Cloudflare:
+The best option for non-technical users is the official Cloudflare flow with a public repository and a `Deploy to Cloudflare` button.
+
+Official Cloudflare button:
 
 ```md
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=URL_DE_TU_REPO_PUBLICO)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=YOUR_PUBLIC_REPO_URL)
 ```
 
-Cuando este proyecto viva en GitHub o GitLab publico, ese boton permitira desplegarlo en pocos clics desde el navegador. Cloudflare recomienda este flujo para reducir la configuracion manual.
+Once this project is hosted in a public GitHub or GitLab repository, that button will let you deploy it in a few clicks from the browser. Cloudflare recommends this flow to reduce manual configuration.
 
-## Despliegue rapido actual
+## Current Quick Deployment
 
-Si todavia no tienes el boton listo, estos son los pasos minimos:
+If you do not have the button ready yet, these are the minimum steps:
 
-1. Instala dependencias:
+1. Install dependencies:
 
 ```bash
 npm install
 ```
 
-2. Inicia sesion:
+2. Log in:
 
 ```bash
 npm run cf:login
 ```
 
-3. Crea el secreto `API_SECRET`:
+3. Create the `API_SECRET` secret:
 
 ```bash
 npm run cf:secret:api
 ```
 
-4. Despliega:
+4. Deploy:
 
 ```bash
 npm run deploy
 ```
 
-5. Abre la pagina de comprobacion:
+5. Open the health page:
 
 ```text
-https://tu-worker.workers.dev/health
+https://your-worker.workers.dev/health
 ```
 
-Si quieres validar el bundle antes de subirlo:
+If you want to validate the bundle before uploading it:
 
 ```bash
 npm run cf:deploy:dry
 ```
 
-## Despliegue desde panel de Cloudflare
+## Deployment From the Cloudflare Dashboard
 
-Si prefieres evitar terminal, Cloudflare tambien permite importar un repositorio GitHub o GitLab desde `Workers & Pages` y desplegar desde ahi. Para usuarios no tecnicos, esta suele ser la segunda mejor opcion despues del boton de despliegue.
+If you prefer to avoid the terminal, Cloudflare also lets you import a GitHub or GitLab repository from `Workers & Pages` and deploy from there. For non-technical users, this is usually the second-best option after the deploy button.
 
-## Configuracion de xDrip+
+## xDrip+ Configuration
 
-Usa la opcion de Nightscout Sync REST API y apunta a:
-
-```text
-https://API_SECRET@tu-worker.workers.dev/api/v1/
-```
-
-Es importante mantener el sufijo `/api/v1/`.
-
-## Como comprobar que funciona
-
-Abre:
+Use the Nightscout Sync REST API option and point it to:
 
 ```text
-https://tu-worker.workers.dev/health
+https://API_SECRET@your-worker.workers.dev/api/v1/
 ```
 
-Tambien puedes revisar:
+It is important to keep the `/api/v1/` suffix.
+
+## How To Check That It Works
+
+Open:
 
 ```text
-https://tu-worker.workers.dev/api/v1/status.json
+https://your-worker.workers.dev/health
 ```
 
-## Variables de entorno
+You can also check:
 
-- `API_SECRET`: secreto obligatorio para escritura.
-- `READ_PUBLIC`: `true` en esta configuracion. Las rutas GET de lecturas y estado quedan publicas para facilitar el acceso desde navegador.
-- `MAX_ENTRIES`: `2000` por defecto.
+```text
+https://your-worker.workers.dev/api/v1/status.json
+```
 
-## Endpoints disponibles
+## Environment Variables
+
+- `API_SECRET`: required secret for write access.
+- `READ_PUBLIC`: `true` in this configuration. The GET routes for readings and status are public to make browser access easier.
+- `MAX_ENTRIES`: `2000` by default.
+
+## Available Endpoints
 
 - `POST /api/v1/entries`
 - `POST /api/v1/entries.json`
@@ -127,32 +129,32 @@ https://tu-worker.workers.dev/api/v1/status.json
 
 ## Troubleshooting
 
-### No llegan datos
+### No Data Arrives
 
-- Revisa que xDrip+ use la URL completa con `/api/v1/`.
-- Comprueba que `API_SECRET` sea correcto.
-- Revisa `/health` para ver si hay lecturas recientes.
+- Check that xDrip+ is using the full URL with `/api/v1/`.
+- Verify that `API_SECRET` is correct.
+- Check `/health` to see whether recent readings are present.
 
-### API_SECRET incorrecto
+### Incorrect API_SECRET
 
-- Si el `POST` devuelve `401`, vuelve a guardar el secreto con `wrangler secret put API_SECRET`.
-- Si usas `https://SECRET@host/...`, asegúrate de que el cliente envie Basic Auth correctamente.
+- If the `POST` returns `401`, save the secret again with `wrangler secret put API_SECRET`.
+- If you use `https://SECRET@host/...`, make sure the client sends Basic Auth correctly.
 
-### xDrip+ sin `/api/v1/`
+### xDrip+ Without `/api/v1/`
 
-- Muchas integraciones fallan si la URL termina antes. Usa exactamente `https://API_SECRET@tu-worker.workers.dev/api/v1/`.
+- Many integrations fail if the URL ends earlier. Use exactly `https://API_SECRET@your-worker.workers.dev/api/v1/`.
 
-### Lecturas antiguas
+### Old Readings
 
-- TinyScout Lite conserva solo las ultimas `MAX_ENTRIES`.
-- Si el reloj del movil esta mal, las lecturas pueden entrar con fechas antiguas.
+- TinyScout Lite keeps only the latest `MAX_ENTRIES`.
+- If the phone clock is wrong, readings may arrive with old timestamps.
 
-### Diferencia horaria
+### Time Difference
 
-- `dateString` se guarda en ISO UTC.
-- Comprueba zona horaria y hora del dispositivo que envia los datos.
+- `dateString` is stored in ISO UTC.
+- Check the timezone and clock of the device sending the data.
 
-## Desarrollo local
+## Local Development
 
 ```bash
 npm install
