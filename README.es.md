@@ -60,7 +60,7 @@ npm run deploy
 https://tu-worker.workers.dev/health
 ```
 
-En la primera visita, TinyScout Lite genera `API_SECRET` automaticamente y lo muestra una sola vez en la pantalla final de configuracion. Guarda ese secreto y usalo en xDrip+.
+En la primera visita, TinyScout Lite genera automaticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez en la pantalla final de configuracion. Guarda ese secreto y usalo en xDrip+.
 
 Si quieres validar el bundle antes de subirlo:
 
@@ -98,7 +98,7 @@ https://tu-worker.workers.dev/api/v1/status.json
 
 ## Variables De Entorno
 
-- `API_SECRET`: override opcional. Si no se define, TinyScout Lite lo genera automaticamente en el primer setup.
+- `API_SECRET`: override opcional. Si no se define, TinyScout Lite genera automaticamente un secreto de 6 caracteres en el primer setup.
 - `READ_PUBLIC`: `true` en esta configuracion. Las rutas GET de lecturas y estado quedan publicas para facilitar el acceso desde el navegador.
 - `MAX_ENTRIES`: `2000` por defecto.
 
@@ -131,7 +131,8 @@ https://tu-worker.workers.dev/api/v1/status.json
 
 ### API_SECRET Incorrecto
 
-- Si el `POST` devuelve `401`, vuelve a guardar el secreto con `wrangler secret put API_SECRET`.
+- Si el `POST` devuelve `401`, comprueba que estas usando el secreto de 6 caracteres mostrado en la primera pantalla de setup.
+- Si quieres sustituirlo manualmente, guarda un nuevo override con `wrangler secret put API_SECRET`.
 - Si usas `https://SECRET@host/...`, asegurate de que el cliente envie Basic Auth correctamente.
 
 ### xDrip+ Sin `/api/v1/`

@@ -13,7 +13,7 @@ async function initializeSetup(): Promise<{ secret: string; cookie: string }> {
   expect(cookie).toContain("tinyscout_setup=");
 
   const html = await response.text();
-  const secretMatch = html.match(/<code>([a-f0-9]{48})<\/code>/);
+  const secretMatch = html.match(/<code>([a-z2-9]{6})<\/code>/);
   expect(secretMatch?.[1]).toBeTruthy();
 
   return {

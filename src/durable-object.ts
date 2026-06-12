@@ -3,6 +3,7 @@ import type { CgmEntry, EntryQuery, EntriesSnapshot, SetupState } from "./types"
 
 const STORAGE_KEY = "entries";
 const SETUP_KEY = "setup";
+const API_SECRET_LENGTH = 6;
 
 export class EntriesDurableObject {
   constructor(
@@ -67,7 +68,7 @@ export class EntriesDurableObject {
     }
 
     const state = {
-      apiSecret: createRandomSecret(),
+      apiSecret: createShortApiSecret(),
       revealToken: createRandomSecret()
     } satisfies SetupState;
     await this.ctx.storage.put(SETUP_KEY, state);
@@ -111,4 +112,11 @@ function createRandomSecret(): string {
   const bytes = new Uint8Array(24);
   crypto.getRandomValues(bytes);
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function createShortApiSecret(): string {
+  const alphabet = "abcdefghjkmnpqrstuvwxyz23456789";
+  const bytes = new Uint8Array(API_SECRET_LENGTH);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join("");
 }
