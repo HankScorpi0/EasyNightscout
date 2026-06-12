@@ -28,49 +28,13 @@ La opcion ideal para personas no tecnicas es usar el flujo oficial de Cloudflare
 
 Boton oficial de Cloudflare:
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite)
+<a href="https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite" target="_blank" rel="noopener noreferrer">
+  <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" />
+</a>
 
 Cuando este proyecto este en GitHub o GitLab publico, ese boton permitira desplegarlo en pocos clics desde el navegador. Cloudflare recomienda este flujo para reducir la configuracion manual.
 
-## Despliegue Rapido Actual
-
-Si todavia no tienes el boton listo, estos son los pasos minimos:
-
-1. Instala dependencias:
-
-```bash
-npm install
-```
-
-2. Inicia sesion:
-
-```bash
-npm run cf:login
-```
-
-3. Despliega:
-
-```bash
-npm run deploy
-```
-
-4. Abre la pagina de salud:
-
-```text
-https://tu-worker.workers.dev/health
-```
-
 En la primera visita, TinyScout Lite genera automaticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez en la pantalla final de configuracion. Guarda ese secreto y usalo en xDrip+.
-
-Si quieres validar el bundle antes de subirlo:
-
-```bash
-npm run cf:deploy:dry
-```
-
-## Despliegue Desde El Panel De Cloudflare
-
-Si prefieres evitar la terminal, Cloudflare tambien permite importar un repositorio de GitHub o GitLab desde `Workers & Pages` y desplegar desde ahi. Para usuarios no tecnicos, esta suele ser la segunda mejor opcion despues del boton de despliegue.
 
 ## Configuracion De xDrip+
 
