@@ -33,7 +33,7 @@ Official Cloudflare button:
   <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" />
 </a>
 
-Once this project is hosted in a public GitHub or GitLab repository, that button will let you deploy it in a few clicks from the browser. Cloudflare recommends this flow to reduce manual configuration.
+This project can be deployed in a few clicks using the `Deploy to Cloudflare` button. Cloudflare recommends this flow to reduce manual configuration.
 
 On the first visit, TinyScout Lite generates a 6-character `API_SECRET` automatically and shows it once on the final setup screen. Save that secret and use it in xDrip+.
 
