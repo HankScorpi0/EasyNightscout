@@ -43,6 +43,35 @@ export interface EntriesSnapshot {
   last: CgmEntry | null;
 }
 
+export interface TreatmentsSnapshot {
+  count: number;
+  last: Treatment | null;
+}
+
+export interface Treatment {
+  _id: string;
+  eventType: string;
+  created_at: string;
+  mills: number;
+  enteredBy?: string;
+  notes?: string;
+  identifier?: string;
+  uuid?: string;
+  syncIdentifier?: string;
+  [key: string]: unknown;
+}
+
+export interface QueryFilter {
+  field: string;
+  operator: "$eq" | "$gte" | "$lte" | "$gt" | "$lt";
+  value: string;
+}
+
+export interface TreatmentQuery {
+  count: number;
+  filters: QueryFilter[];
+}
+
 export interface StatusPayload {
   status: "ok";
   name: string;
@@ -55,6 +84,8 @@ export interface StatusPayload {
 export interface HealthViewModel {
   latest: CgmEntry | null;
   count: number;
+  latestTreatment?: Treatment | null;
+  treatmentCount?: number;
   baseUrl: string;
   setupSecret?: string | null;
   setupPending?: boolean;

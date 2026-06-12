@@ -1,7 +1,17 @@
 import { clampMaxEntries, mergeEntries, queryEntries } from "./entries";
-import type { CgmEntry, EntryQuery, EntriesSnapshot, SetupState } from "./types";
+import { mergeTreatments, queryTreatments } from "./treatments";
+import type {
+  CgmEntry,
+  EntriesSnapshot,
+  EntryQuery,
+  SetupState,
+  Treatment,
+  TreatmentsSnapshot,
+  TreatmentQuery
+} from "./types";
 
 const STORAGE_KEY = "entries";
+const TREATMENTS_KEY = "treatments";
 const SETUP_KEY = "setup";
 const API_SECRET_LENGTH = 6;
 
@@ -45,8 +55,28 @@ export class EntriesDurableObject {
       });
     }
 
+    if (request.method === "GET" && url.pathname === "/treatments") {
+      const query = JSON.parse(url.searchParams.get("query") ?? "{}") as TreatmentQuery;
+      const treatments = await this.getTreatments();
+      return Response.json(queryTreatments(treatments, query));
+    }
+
+    if (request.method === "POST" && url.pathname === "/treatments") {
+      const incoming = (await request.json()) as Treatment[];
+      const merged = await this.putTreatments(incoming);
+      return Response.json({
+        stored: incoming.length,
+        total: merged.length
+      });
+    }
+
     if (request.method === "GET" && url.pathname === "/snapshot") {
       const snapshot = await this.getSnapshot();
+      return Response.json(snapshot);
+    }
+
+    if (request.method === "GET" && url.pathname === "/treatments/snapshot") {
+      const snapshot = await this.getTreatmentsSnapshot();
       return Response.json(snapshot);
     }
 
@@ -59,6 +89,10 @@ export class EntriesDurableObject {
 
   private async getSetupState(): Promise<SetupState | null> {
     return (await this.ctx.storage.get<SetupState>(SETUP_KEY)) ?? null;
+  }
+
+  private async getTreatments(): Promise<Treatment[]> {
+    return (await this.ctx.storage.get<Treatment[]>(TREATMENTS_KEY)) ?? [];
   }
 
   private async bootstrapSetupState(): Promise<SetupState> {
@@ -99,11 +133,26 @@ export class EntriesDurableObject {
     return merged;
   }
 
+  private async putTreatments(incoming: Treatment[]): Promise<Treatment[]> {
+    const current = await this.getTreatments();
+    const merged = mergeTreatments(current, incoming, clampMaxEntries(this.env.MAX_ENTRIES));
+    await this.ctx.storage.put(TREATMENTS_KEY, merged);
+    return merged;
+  }
+
   private async getSnapshot(): Promise<EntriesSnapshot> {
     const entries = await this.getEntries();
     return {
       count: entries.length,
       last: entries[0] ?? null
+    };
+  }
+
+  private async getTreatmentsSnapshot(): Promise<TreatmentsSnapshot> {
+    const treatments = await this.getTreatments();
+    return {
+      count: treatments.length,
+      last: treatments[0] ?? null
     };
   }
 }

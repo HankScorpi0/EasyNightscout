@@ -7,7 +7,7 @@ Version in English: see [README.md](README.md).
 ## Lo Que Si Es
 
 - Un Worker ligero en Cloudflare.
-- Un receptor de lecturas `entries`.
+- Un receptor de lecturas `entries` y `treatments`.
 - Un visor rapido de salud en `/health`.
 - Una opcion barata o gratuita para tener un respaldo sencillo.
 
@@ -16,7 +16,8 @@ Version in English: see [README.md](README.md).
 - No es Nightscout completo.
 - No es un dispositivo medico.
 - No es una fuente principal para decisiones clinicas.
-- No guarda tratamientos reales, bolos, perfiles reales ni datos personales.
+- No implementa el soporte completo de perfiles ni `devicestatus` de Nightscout.
+- Todavia no implementa todo el conjunto de funciones de `treatments` de Nightscout, como borrado o reconciliacion avanzada.
 
 ## Advertencia Importante
 
@@ -54,6 +55,13 @@ Abre:
 https://tu-worker.workers.dev/health
 ```
 
+La pagina de health muestra:
+
+- la ultima lectura de glucosa
+- el ultimo treatment
+- la cantidad de lecturas guardadas
+- la cantidad de treatments guardados
+
 Tambien puedes revisar:
 
 ```text
@@ -79,11 +87,31 @@ https://tu-worker.workers.dev/api/v1/status.json
 - `GET /api/v1/status.json`
 - `GET /api/v1/treatments`
 - `GET /api/v1/treatments.json`
+- `POST /api/v1/treatments`
+- `POST /api/v1/treatments.json`
 - `GET /api/v1/profile`
 - `GET /api/v1/profile.json`
 - `GET /api/v1/devicestatus`
 - `GET /api/v1/devicestatus.json`
 - `GET /health`
+
+## Soporte De Treatments
+
+TinyScout Lite ahora guarda y devuelve `treatments` al estilo Nightscout.
+
+El soporte actual incluye:
+
+- `POST` de un objeto treatment o un array de treatments
+- `GET` con `count`
+- `GET` con filtros tipo Nightscout usando `find[...]`, por ejemplo `find[eventType]=Correction Bolus`
+- persistencia de campos habituales como `eventType`, `created_at`, `mills`, `insulin`, `carbs`, `notes` y `enteredBy`
+- conservacion de campos adicionales enviados por el cliente
+
+Limitaciones actuales:
+
+- todavia no existe `DELETE /api/v1/treatments`
+- todavia no existe `DELETE /api/v1/treatments/{id}`
+- no implementa aun todo el comportamiento de UUIDs y reconciliacion de Nightscout
 
 ## Resolucion De Problemas
 
@@ -91,7 +119,7 @@ https://tu-worker.workers.dev/api/v1/status.json
 
 - Revisa que xDrip+ use la URL completa con `/api/v1/`.
 - Comprueba que `API_SECRET` sea correcto.
-- Revisa `/health` para ver si hay lecturas recientes.
+- Revisa `/health` para ver si hay lecturas y treatments recientes.
 
 ### API_SECRET Incorrecto
 

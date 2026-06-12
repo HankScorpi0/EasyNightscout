@@ -64,6 +64,24 @@ export function renderHealthPage(view: HealthViewModel): string {
         <code>${exampleUrl}</code>
       </section>
     `;
+  const latestTreatmentBlock = view.latestTreatment
+    ? `
+      <section>
+        <h2>Latest treatment</h2>
+        <p class="treatment-type">${view.latestTreatment.eventType || "Untyped treatment"}</p>
+        <p>Received: ${formatElapsed(view.latestTreatment.mills, Date.now())} ago</p>
+        <p>Insulin: ${
+          typeof view.latestTreatment.insulin === "number" ? `${view.latestTreatment.insulin} U` : "No insulin"
+        }</p>
+        <p>Notes: ${view.latestTreatment.notes ?? "No notes"}</p>
+      </section>
+    `
+    : `
+      <section>
+        <h2>No treatments received yet.</h2>
+        <p>TinyScout Lite will show the most recent Nightscout-compatible treatment here.</p>
+      </section>
+    `;
 
   return `<!doctype html>
 <html lang="en">
@@ -98,6 +116,11 @@ export function renderHealthPage(view: HealthViewModel): string {
       .reading {
         font-size: 2.5rem;
         font-weight: 800;
+        margin: 0.5rem 0;
+      }
+      .treatment-type {
+        font-size: 1.4rem;
+        font-weight: 700;
         margin: 0.5rem 0;
       }
       .setup {
@@ -140,9 +163,11 @@ export function renderHealthPage(view: HealthViewModel): string {
       <p>Secondary/recovery server for Nightscout-compatible CGM readings.</p>
       ${setupBlock}
       ${latestBlock}
+      ${latestTreatmentBlock}
       <section>
         <h2>Status</h2>
         <p>Stored readings: ${view.count}</p>
+        <p>Stored treatments: ${view.treatmentCount ?? 0}</p>
         <p><a href="/api/v1/status.json">View status JSON</a></p>
       </section>
     </main>

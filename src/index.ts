@@ -11,7 +11,8 @@ import {
 } from "./entries";
 import { renderHealthPage } from "./health";
 import { htmlResponse, jsonResponse } from "./responses";
-import type { CgmEntry, Env, SetupState, StatusPayload } from "./types";
+import { normalizeTreatments, parseTreatmentQuery } from "./treatments";
+import type { CgmEntry, Env, SetupState, StatusPayload, Treatment, TreatmentsSnapshot } from "./types";
 
 export { EntriesDurableObject };
 
@@ -47,6 +48,31 @@ async function getSnapshot(env: Env): Promise<StatusPayload["entries"]> {
   const stub = getEntriesStub(env);
   const response = await stub.fetch("https://entries.internal/snapshot");
   return (await response.json()) as StatusPayload["entries"];
+}
+
+async function getTreatmentsSnapshot(env: Env): Promise<TreatmentsSnapshot> {
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch("https://entries.internal/treatments/snapshot");
+  return (await response.json()) as TreatmentsSnapshot;
+}
+
+async function listTreatments(env: Env, query: ReturnType<typeof parseTreatmentQuery>): Promise<Treatment[]> {
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch(
+    `https://entries.internal/treatments?query=${encodeURIComponent(JSON.stringify(query))}`
+  );
+  return (await response.json()) as Treatment[];
+}
+
+async function storeTreatments(env: Env, treatments: Treatment[]): Promise<{ stored: number; total: number }> {
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch("https://entries.internal/treatments", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(treatments)
+  });
+
+  return (await response.json()) as { stored: number; total: number };
 }
 
 async function getSetupState(env: Env): Promise<SetupState | null> {
@@ -197,10 +223,13 @@ export default {
       }
 
       const snapshot = await getSnapshot(env);
+      const treatmentsSnapshot = await getTreatmentsSnapshot(env);
       return htmlResponse(
         renderHealthPage({
           latest: snapshot.last,
           count: snapshot.count,
+          latestTreatment: treatmentsSnapshot.last,
+          treatmentCount: treatmentsSnapshot.count,
           baseUrl: url.origin,
           setupSecret:
             setupState?.revealToken && effectiveSetupToken === setupState.revealToken
@@ -234,15 +263,54 @@ export default {
       return jsonResponse(payload);
     }
 
+    if (request.method === "POST" && ["/api/v1/treatments", "/api/v1/treatments.json"].includes(url.pathname)) {
+      const expectedSecret = await resolveConfiguredSecret(env);
+      if (!expectedSecret) {
+        return jsonResponse(
+          { error: "Setup incomplete. Open /health once to generate the API secret." },
+          { status: 503 }
+        );
+      }
+
+      if (!hasValidSecret(request, expectedSecret)) {
+        const authError = requireConfiguredWriteAuth(request, expectedSecret);
+        if (authError) {
+          return authError;
+        }
+      }
+
+      try {
+        const body = await parsePostBody(request);
+        const treatments = normalizeTreatments(body);
+        const result = await storeTreatments(env, treatments);
+        return jsonResponse(result, { status: 201 });
+      } catch (error) {
+        return jsonResponse(
+          { error: error instanceof Error ? error.message : "Invalid request body." },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (request.method === "GET" && ["/api/v1/treatments", "/api/v1/treatments.json"].includes(url.pathname)) {
+      const expectedSecret = await resolveConfiguredSecret(env);
+      const authError =
+        env.READ_PUBLIC?.toLowerCase() === "true"
+          ? null
+          : requireConfiguredWriteAuth(request, expectedSecret);
+      if (authError) {
+        return authError;
+      }
+
+      const query = parseTreatmentQuery(url);
+      const treatments = await listTreatments(env, query);
+      return jsonResponse(treatments);
+    }
+
     if (
-      [
-        "/api/v1/treatments",
-        "/api/v1/treatments.json",
-        "/api/v1/profile",
-        "/api/v1/profile.json",
-        "/api/v1/devicestatus",
-        "/api/v1/devicestatus.json"
-      ].includes(url.pathname)
+      ["/api/v1/profile", "/api/v1/profile.json", "/api/v1/devicestatus", "/api/v1/devicestatus.json"].includes(
+        url.pathname
+      )
     ) {
       const expectedSecret = await resolveConfiguredSecret(env);
       const authError =

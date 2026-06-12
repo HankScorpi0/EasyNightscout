@@ -46,6 +46,17 @@ async function postEntries(body: unknown, headers: HeadersInit) {
   });
 }
 
+async function postTreatments(body: unknown, headers: HeadersInit) {
+  return SELF.fetch("https://example.com/api/v1/treatments.json", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...headers
+    },
+    body: JSON.stringify(body)
+  });
+}
+
 describe("api", () => {
   it("generates the setup secret on first health visit and reveals it once", async () => {
     const { secret, cookie } = await initializeSetup();
@@ -144,6 +155,39 @@ describe("api", () => {
     expect(entries[0].date).toBe(1781111113300);
   });
 
+  it("stores and queries treatments", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
+    const postResponse = await postTreatments([
+      {
+        eventType: "Carb Correction",
+        created_at: "2026-06-10T20:00:00.000Z",
+        carbs: 12,
+        notes: "Juice"
+      },
+      {
+        eventType: "Correction Bolus",
+        created_at: "2026-06-10T20:05:00.000Z",
+        insulin: 1.2,
+        enteredBy: "xDrip"
+      }
+    ], secretHeader(secret));
+
+    expect(postResponse.status).toBe(201);
+
+    const treatmentsResponse = await SELF.fetch(
+      "https://example.com/api/v1/treatments.json?count=1&find[eventType]=Correction%20Bolus",
+      { headers: secretHeader(secret) }
+    );
+    expect(treatmentsResponse.status).toBe(200);
+
+    const treatments = (await treatmentsResponse.json()) as Array<{ eventType: string; mills: number }>;
+    expect(treatments).toHaveLength(1);
+    expect(treatments[0].eventType).toBe("Correction Bolus");
+    expect(treatments[0].mills).toBe(1781121900000);
+  });
+
   it("returns status and compatibility endpoints", async () => {
     const { secret, cookie } = await initializeSetup();
     await acknowledgeSetup(cookie);
@@ -166,6 +210,17 @@ describe("api", () => {
     const { secret, cookie } = await initializeSetup();
     await acknowledgeSetup(cookie);
 
+    await postEntries({ sgv: 143, date: 1781111111111 }, secretHeader(secret));
+    await postTreatments(
+      {
+        eventType: "Correction Bolus",
+        created_at: "2026-06-10T20:05:00.000Z",
+        insulin: 1.2,
+        notes: "Test bolus"
+      },
+      secretHeader(secret)
+    );
+
     const response = await SELF.fetch("https://example.com/health", {
       headers: secretHeader(secret)
     });
@@ -174,5 +229,9 @@ describe("api", () => {
     const html = await response.text();
     expect(html).toContain("TinyScout Lite");
     expect(html).toContain("Stored readings");
+    expect(html).toContain("Latest treatment");
+    expect(html).toContain("Correction Bolus");
+    expect(html).toContain("Insulin: 1.2 U");
+    expect(html).toContain("Stored treatments: 1");
   });
 });

@@ -7,7 +7,7 @@ Spanish version: see [README.es.md](README.es.md).
 ## What It Is
 
 - A lightweight Cloudflare Worker.
-- A receiver for `entries` readings.
+- A receiver for `entries` readings and `treatments`.
 - A quick health view at `/health`.
 - A low-cost or free option for simple backup access.
 
@@ -16,7 +16,8 @@ Spanish version: see [README.es.md](README.es.md).
 - It is not full Nightscout.
 - It is not a medical device.
 - It is not a primary source for clinical decisions.
-- It does not store real treatments, boluses, real profiles, or personal data.
+- It does not implement full Nightscout profile or devicestatus support.
+- It does not yet implement the full Nightscout treatments feature set such as delete routes or advanced reconciliation behavior.
 
 ## Important Warning
 
@@ -54,6 +55,13 @@ Open:
 https://your-worker.workers.dev/health
 ```
 
+The health page shows:
+
+- the latest glucose reading
+- the latest treatment
+- the number of stored readings
+- the number of stored treatments
+
 You can also check:
 
 ```text
@@ -79,11 +87,31 @@ https://your-worker.workers.dev/api/v1/status.json
 - `GET /api/v1/status.json`
 - `GET /api/v1/treatments`
 - `GET /api/v1/treatments.json`
+- `POST /api/v1/treatments`
+- `POST /api/v1/treatments.json`
 - `GET /api/v1/profile`
 - `GET /api/v1/profile.json`
 - `GET /api/v1/devicestatus`
 - `GET /api/v1/devicestatus.json`
 - `GET /health`
+
+## Treatments Support
+
+TinyScout Lite now stores and returns Nightscout-style `treatments`.
+
+Current support includes:
+
+- `POST` of a single treatment object or an array of treatments
+- `GET` with `count`
+- `GET` filters using Nightscout-style `find[...]` query params such as `find[eventType]=Correction Bolus`
+- persistence of common treatment fields like `eventType`, `created_at`, `mills`, `insulin`, `carbs`, `notes`, and `enteredBy`
+- preservation of additional payload fields when they are sent by the client
+
+Current limitations:
+
+- no `DELETE /api/v1/treatments` yet
+- no `DELETE /api/v1/treatments/{id}` yet
+- no full Nightscout UUID and reconciliation behavior
 
 ## Troubleshooting
 
@@ -91,7 +119,7 @@ https://your-worker.workers.dev/api/v1/status.json
 
 - Check that xDrip+ is using the full URL with `/api/v1/`.
 - Verify that `API_SECRET` is correct.
-- Check `/health` to see whether recent readings are present.
+- Check `/health` to see whether recent readings and treatments are present.
 
 ### Incorrect API_SECRET
 
