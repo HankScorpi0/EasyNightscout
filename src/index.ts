@@ -1,4 +1,8 @@
-import { optionsResponse, requireReadAuth, requireWriteAuth } from "./auth";
+import {
+  hasValidSecret,
+  optionsResponse,
+  requireConfiguredWriteAuth
+} from "./auth";
 import { EntriesDurableObject } from "./durable-object";
 import {
   MAX_REQUEST_BYTES,
@@ -7,7 +11,7 @@ import {
 } from "./entries";
 import { renderHealthPage } from "./health";
 import { htmlResponse, jsonResponse } from "./responses";
-import type { CgmEntry, Env, StatusPayload } from "./types";
+import type { CgmEntry, Env, SetupState, StatusPayload } from "./types";
 
 export { EntriesDurableObject };
 
@@ -45,6 +49,71 @@ async function getSnapshot(env: Env): Promise<StatusPayload["entries"]> {
   return (await response.json()) as StatusPayload["entries"];
 }
 
+async function getSetupState(env: Env): Promise<SetupState | null> {
+  if (env.API_SECRET) {
+    return {
+      apiSecret: env.API_SECRET,
+      revealToken: null
+    };
+  }
+
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch("https://entries.internal/setup");
+  return (await response.json()) as SetupState | null;
+}
+
+async function bootstrapSetupState(env: Env): Promise<SetupState> {
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch("https://entries.internal/setup/bootstrap", {
+    method: "POST"
+  });
+  return (await response.json()) as SetupState;
+}
+
+async function acknowledgeSetupState(env: Env, revealToken: string): Promise<boolean> {
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch("https://entries.internal/setup/acknowledge", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ revealToken })
+  });
+  const payload = (await response.json()) as { acknowledged: boolean };
+  return payload.acknowledged;
+}
+
+function getCookie(request: Request, name: string): string | null {
+  const cookie = request.headers.get("Cookie");
+  if (!cookie) {
+    return null;
+  }
+
+  for (const part of cookie.split(";")) {
+    const [key, ...rest] = part.trim().split("=");
+    if (key === name) {
+      return rest.join("=") || null;
+    }
+  }
+
+  return null;
+}
+
+function createSetupCookie(token: string): string {
+  return `tinyscout_setup=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=3600`;
+}
+
+function clearSetupCookie(): string {
+  return "tinyscout_setup=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0";
+}
+
+async function resolveConfiguredSecret(env: Env): Promise<string | null> {
+  if (env.API_SECRET) {
+    return env.API_SECRET;
+  }
+
+  const state = await getSetupState(env);
+  return state?.apiSecret ?? null;
+}
+
 async function parsePostBody(request: Request): Promise<unknown> {
   const raw = await request.text();
   if (new TextEncoder().encode(raw).byteLength > MAX_REQUEST_BYTES) {
@@ -77,8 +146,52 @@ export default {
       return Response.redirect(`${url.origin}/health`, 302);
     }
 
+    if (request.method === "POST" && url.pathname === "/setup/acknowledge") {
+      const setupState = await getSetupState(env);
+      const cookieToken = getCookie(request, "tinyscout_setup");
+      if (!setupState?.revealToken || !cookieToken || cookieToken !== setupState.revealToken) {
+        return htmlResponse(
+          renderHealthPage({
+            latest: null,
+            count: 0,
+            baseUrl: url.origin,
+            setupPending: true
+          }),
+          {
+            status: 403,
+            headers: { "Set-Cookie": clearSetupCookie() }
+          }
+        );
+      }
+
+      await acknowledgeSetupState(env, cookieToken);
+      return new Response(null, {
+        status: 303,
+        headers: {
+          Location: `${url.origin}/health`,
+          "Set-Cookie": clearSetupCookie()
+        }
+      });
+    }
+
     if (url.pathname === "/health") {
-      const authError = requireReadAuth(request, env);
+      let setupState = await getSetupState(env);
+      const setupCookie = getCookie(request, "tinyscout_setup");
+      let setCookieHeader: string | null = null;
+
+      if (!env.API_SECRET && !setupState) {
+        setupState = await bootstrapSetupState(env);
+        setCookieHeader = createSetupCookie(setupState.revealToken ?? "");
+      }
+
+      const effectiveSetupToken = setupCookie ?? (setCookieHeader ? setupState?.revealToken ?? null : null);
+      const expectedSecret = setupState?.apiSecret ?? env.API_SECRET;
+      const authError =
+        setupState?.revealToken && effectiveSetupToken === setupState.revealToken
+          ? null
+          : env.READ_PUBLIC?.toLowerCase() === "true"
+            ? null
+            : requireConfiguredWriteAuth(request, expectedSecret);
       if (authError) {
         return authError;
       }
@@ -88,13 +201,23 @@ export default {
         renderHealthPage({
           latest: snapshot.last,
           count: snapshot.count,
-          baseUrl: url.origin
-        })
+          baseUrl: url.origin,
+          setupSecret:
+            setupState?.revealToken && effectiveSetupToken === setupState.revealToken
+              ? setupState.apiSecret
+              : null,
+          setupPending: Boolean(setupState?.revealToken) && effectiveSetupToken !== setupState?.revealToken
+        }),
+        setCookieHeader ? { headers: { "Set-Cookie": setCookieHeader } } : undefined
       );
     }
 
     if (url.pathname === "/api/v1/status.json") {
-      const authError = requireReadAuth(request, env);
+      const expectedSecret = await resolveConfiguredSecret(env);
+      const authError =
+        env.READ_PUBLIC?.toLowerCase() === "true"
+          ? null
+          : requireConfiguredWriteAuth(request, expectedSecret);
       if (authError) {
         return authError;
       }
@@ -121,7 +244,11 @@ export default {
         "/api/v1/devicestatus.json"
       ].includes(url.pathname)
     ) {
-      const authError = requireReadAuth(request, env);
+      const expectedSecret = await resolveConfiguredSecret(env);
+      const authError =
+        env.READ_PUBLIC?.toLowerCase() === "true"
+          ? null
+          : requireConfiguredWriteAuth(request, expectedSecret);
       if (authError) {
         return authError;
       }
@@ -130,9 +257,19 @@ export default {
     }
 
     if (request.method === "POST" && ["/api/v1/entries", "/api/v1/entries.json"].includes(url.pathname)) {
-      const authError = requireWriteAuth(request, env);
-      if (authError) {
-        return authError;
+      const expectedSecret = await resolveConfiguredSecret(env);
+      if (!expectedSecret) {
+        return jsonResponse(
+          { error: "Setup incomplete. Open /health once to generate the API secret." },
+          { status: 503 }
+        );
+      }
+
+      if (!hasValidSecret(request, expectedSecret)) {
+        const authError = requireConfiguredWriteAuth(request, expectedSecret);
+        if (authError) {
+          return authError;
+        }
       }
 
       try {
@@ -149,7 +286,11 @@ export default {
     }
 
     if (request.method === "GET" && isEntriesReadRoute(url.pathname)) {
-      const authError = requireReadAuth(request, env);
+      const expectedSecret = await resolveConfiguredSecret(env);
+      const authError =
+        env.READ_PUBLIC?.toLowerCase() === "true"
+          ? null
+          : requireConfiguredWriteAuth(request, expectedSecret);
       if (authError) {
         return authError;
       }

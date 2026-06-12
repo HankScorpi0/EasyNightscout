@@ -1,13 +1,41 @@
 import { SELF, reset } from "cloudflare:test";
 import { afterEach, describe, expect, it } from "vitest";
 
-const secretHeader = { "api-secret": "secret" };
-
 afterEach(async () => {
   await reset();
 });
 
-async function postEntries(body: unknown, headers: HeadersInit = secretHeader) {
+async function initializeSetup(): Promise<{ secret: string; cookie: string }> {
+  const response = await SELF.fetch("https://example.com/health");
+  expect(response.status).toBe(200);
+
+  const cookie = response.headers.get("Set-Cookie");
+  expect(cookie).toContain("tinyscout_setup=");
+
+  const html = await response.text();
+  const secretMatch = html.match(/<code>([a-f0-9]{48})<\/code>/);
+  expect(secretMatch?.[1]).toBeTruthy();
+
+  return {
+    secret: secretMatch![1],
+    cookie: cookie!.split(";", 1)[0]
+  };
+}
+
+async function acknowledgeSetup(cookie: string) {
+  const response = await SELF.fetch("https://example.com/setup/acknowledge", {
+    method: "POST",
+    headers: { Cookie: cookie },
+    redirect: "manual"
+  });
+  expect(response.status).toBe(303);
+}
+
+function secretHeader(secret: string): HeadersInit {
+  return { "api-secret": secret };
+}
+
+async function postEntries(body: unknown, headers: HeadersInit) {
   return SELF.fetch("https://example.com/api/v1/entries.json", {
     method: "POST",
     headers: {
@@ -19,7 +47,28 @@ async function postEntries(body: unknown, headers: HeadersInit = secretHeader) {
 }
 
 describe("api", () => {
+  it("generates the setup secret on first health visit and reveals it once", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
+    const secondResponse = await SELF.fetch("https://example.com/health", {
+      headers: secretHeader(secret)
+    });
+    expect(secondResponse.status).toBe(200);
+    const secondHtml = await secondResponse.text();
+    expect(secondHtml).not.toContain(secret);
+
+    const postResponse = await postEntries(
+      { sgv: 143, date: 2781111111111 },
+      secretHeader(secret)
+    );
+    expect(postResponse.status).toBe(201);
+  });
+
   it("rejects POST without API secret", async () => {
+    const { cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
     const response = await SELF.fetch("https://example.com/api/v1/entries.json", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -30,19 +79,22 @@ describe("api", () => {
   });
 
   it("accepts single-object POST and returns current entry", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
     const postResponse = await postEntries({
       sgv: 143,
       date: 2781111111111,
       direction: "Flat",
       type: "sgv",
       device: "xDrip"
-    });
+    }, secretHeader(secret));
 
     expect(postResponse.status).toBe(201);
 
     const currentResponse = await SELF.fetch(
       "https://example.com/api/v1/entries/current.json",
-      { headers: secretHeader }
+      { headers: secretHeader(secret) }
     );
     expect(currentResponse.status).toBe(200);
 
@@ -52,15 +104,18 @@ describe("api", () => {
   });
 
   it("accepts arrays, deduplicates, and limits count", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
     await postEntries([
       { sgv: 140, date: 1781111112112, type: "sgv" },
       { sgv: 141, date: 1781111112113, type: "sgv" },
       { sgv: 141, date: 1781111112113, type: "sgv" }
-    ]);
+    ], secretHeader(secret));
 
     const response = await SELF.fetch(
       "https://example.com/api/v1/entries.json?count=2",
-      { headers: secretHeader }
+      { headers: secretHeader(secret) }
     );
 
     const entries = (await response.json()) as Array<{ date: number }>;
@@ -69,15 +124,18 @@ describe("api", () => {
   });
 
   it("filters sgv entries and date ranges", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
     await postEntries([
       { sgv: 120, date: 1781111113100, type: "mbg" },
       { sgv: 121, date: 1781111113200, type: "sgv" },
       { sgv: 122, date: 1781111113300, type: "sgv" }
-    ]);
+    ], secretHeader(secret));
 
     const response = await SELF.fetch(
       "https://example.com/api/v1/entries/sgv.json?find[date][$gte]=1781111113250",
-      { headers: secretHeader }
+      { headers: secretHeader(secret) }
     );
 
     const entries = (await response.json()) as Array<{ date: number; type: string }>;
@@ -87,8 +145,11 @@ describe("api", () => {
   });
 
   it("returns status and compatibility endpoints", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
     const statusResponse = await SELF.fetch("https://example.com/api/v1/status.json", {
-      headers: secretHeader
+      headers: secretHeader(secret)
     });
     expect(statusResponse.status).toBe(200);
     const status = (await statusResponse.json()) as { status: string; entries: { count: number } };
@@ -96,14 +157,17 @@ describe("api", () => {
     expect(typeof status.entries.count).toBe("number");
 
     const treatmentsResponse = await SELF.fetch("https://example.com/api/v1/treatments", {
-      headers: secretHeader
+      headers: secretHeader(secret)
     });
     expect(await treatmentsResponse.json()).toEqual([]);
   });
 
   it("renders the health page", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
     const response = await SELF.fetch("https://example.com/health", {
-      headers: secretHeader
+      headers: secretHeader(secret)
     });
 
     expect(response.status).toBe(200);

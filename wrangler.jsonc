@@ -5,9 +5,6 @@
   "compatibility_date": "2026-06-10",
   "workers_dev": true,
   "preview_urls": false,
-  "secrets": {
-    "required": ["API_SECRET"]
-  },
   "vars": {
     "MAX_ENTRIES": "2000",
     "READ_PUBLIC": "true"

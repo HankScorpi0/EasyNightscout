@@ -25,7 +25,29 @@ function formatElapsed(date: number, now: number): string {
 }
 
 export function renderHealthPage(view: HealthViewModel): string {
-  const exampleUrl = `https://YOUR_API_SECRET@${view.baseUrl.replace(/^https?:\/\//, "")}/api/v1/`;
+  const exampleSecret = view.setupSecret ?? "YOUR_API_SECRET";
+  const exampleUrl = `https://${exampleSecret}@${view.baseUrl.replace(/^https?:\/\//, "")}/api/v1/`;
+  const setupBlock = view.setupSecret
+    ? `
+      <section class="setup setup-ready">
+        <h2>Setup complete</h2>
+        <p>Save this API secret now. For security reasons it will only be shown this one time.</p>
+        <code>${view.setupSecret}</code>
+        <p>Use this xDrip+ URL:</p>
+        <code>${exampleUrl}</code>
+        <form method="post" action="/setup/acknowledge">
+          <button type="submit">I saved it</button>
+        </form>
+      </section>
+    `
+    : view.setupPending
+      ? `
+      <section class="setup">
+        <h2>Setup already initialized</h2>
+        <p>The one-time API secret screen has already been claimed in another browser session.</p>
+      </section>
+    `
+      : "";
   const latestBlock = view.latest
     ? `
       <section>
@@ -78,12 +100,34 @@ export function renderHealthPage(view: HealthViewModel): string {
         font-weight: 800;
         margin: 0.5rem 0;
       }
+      .setup {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        border-radius: 14px;
+        background: #f3f9ff;
+        border: 1px solid #b8d6f3;
+      }
+      .setup-ready {
+        background: #ecfff4;
+        border-color: #99d9b2;
+      }
       code {
         display: block;
         padding: 0.75rem;
         border-radius: 12px;
         background: #eef6ff;
         overflow-wrap: anywhere;
+      }
+      button {
+        margin-top: 1rem;
+        border: 0;
+        border-radius: 999px;
+        padding: 0.8rem 1.1rem;
+        background: #0b5dbb;
+        color: #fff;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
       }
       a {
         color: #0b5dbb;
@@ -94,6 +138,7 @@ export function renderHealthPage(view: HealthViewModel): string {
     <main>
       <h1>TinyScout Lite is running <span class="ok">OK</span></h1>
       <p>Secondary/recovery server for Nightscout-compatible CGM readings.</p>
+      ${setupBlock}
       ${latestBlock}
       <section>
         <h2>Status</h2>

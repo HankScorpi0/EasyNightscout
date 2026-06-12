@@ -7,7 +7,6 @@ export default defineConfig({
       main: "./src/index.ts",
       miniflare: {
         bindings: {
-          API_SECRET: "secret",
           READ_PUBLIC: "false",
           MAX_ENTRIES: "2000"
         }

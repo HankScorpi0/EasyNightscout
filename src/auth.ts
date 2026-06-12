@@ -49,13 +49,24 @@ function getSecretFromRequest(request: Request): string | null {
   return null;
 }
 
-export function requireWriteAuth(request: Request, env: Env): Response | null {
-  const expected = env.API_SECRET;
+export function hasValidSecret(request: Request, expected: string | null | undefined): boolean {
+  if (!expected) {
+    return false;
+  }
+
+  return getSecretFromRequest(request) === expected;
+}
+
+export function requireConfiguredWriteAuth(request: Request, expected: string | null | undefined): Response | null {
   if (!expected) {
     return null;
   }
 
-  return getSecretFromRequest(request) === expected ? null : unauthorized();
+  return hasValidSecret(request, expected) ? null : unauthorized();
+}
+
+export function requireWriteAuth(request: Request, env: Env): Response | null {
+  return requireConfiguredWriteAuth(request, env.API_SECRET);
 }
 
 export function requireReadAuth(request: Request, env: Env): Response | null {
@@ -63,7 +74,7 @@ export function requireReadAuth(request: Request, env: Env): Response | null {
     return null;
   }
 
-  return requireWriteAuth(request, env);
+  return requireConfiguredWriteAuth(request, env.API_SECRET);
 }
 
 export function unauthorized(): Response {

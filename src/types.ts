@@ -5,6 +5,11 @@ export interface Env {
   ENTRIES_DO: DurableObjectNamespace;
 }
 
+export interface SetupState {
+  apiSecret: string;
+  revealToken: string | null;
+}
+
 export interface CgmEntry {
   _id: string;
   sgv: number;
@@ -51,4 +56,6 @@ export interface HealthViewModel {
   latest: CgmEntry | null;
   count: number;
   baseUrl: string;
+  setupSecret?: string | null;
+  setupPending?: boolean;
 }

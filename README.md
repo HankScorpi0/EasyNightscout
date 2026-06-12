@@ -48,23 +48,19 @@ npm install
 npm run cf:login
 ```
 
-3. Create the `API_SECRET` secret:
-
-```bash
-npm run cf:secret:api
-```
-
-4. Deploy:
+3. Deploy:
 
 ```bash
 npm run deploy
 ```
 
-5. Open the health page:
+4. Open the health page:
 
 ```text
 https://your-worker.workers.dev/health
 ```
+
+On the first visit, TinyScout Lite generates an `API_SECRET` automatically and shows it once on the final setup screen. Save that secret and use it in xDrip+.
 
 If you want to validate the bundle before uploading it:
 
@@ -102,7 +98,7 @@ https://your-worker.workers.dev/api/v1/status.json
 
 ## Environment Variables
 
-- `API_SECRET`: required secret for write access.
+- `API_SECRET`: optional override. If omitted, TinyScout Lite generates one automatically on first setup.
 - `READ_PUBLIC`: `true` in this configuration. The GET routes for readings and status are public to make browser access easier.
 - `MAX_ENTRIES`: `2000` by default.
 
