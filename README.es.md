@@ -1,45 +1,45 @@
 # TinyScout Lite
 
-TinyScout Lite es un servidor minimo compatible con una parte de la API de Nightscout. Esta pensado como sistema secundario o de recovery para recibir lecturas CGM desde xDrip+ y dejarlas disponibles para apps compatibles con Nightscout.
+TinyScout Lite es un servidor mínimo compatible con una parte de la API de Nightscout. Está pensado como sistema secundario o de recuperación para recibir lecturas CGM desde xDrip+ y dejarlas disponibles para apps compatibles con Nightscout.
 
 Version in English: see [README.md](README.md).
 
-## Lo Que Si Es
+## Lo Que Sí Es
 
 - Un Worker ligero en Cloudflare.
 - Un receptor de lecturas `entries` y `treatments`.
-- Un visor rapido de salud en `/health`.
-- Una opcion barata o gratuita para tener un respaldo sencillo.
+- Un visor rápido de salud en `/health`.
+- Una opción barata o gratuita para tener un respaldo sencillo.
 
 ## Lo Que No Es
 
 - No es Nightscout completo.
-- No es un dispositivo medico.
-- No es una fuente principal para decisiones clinicas.
+- No es un dispositivo médico.
+- No es una fuente principal para decisiones clínicas.
 - No implementa el soporte completo de perfiles ni `devicestatus` de Nightscout.
-- Todavia no implementa todo el conjunto de funciones de `treatments` de Nightscout, como borrado o reconciliacion avanzada.
+- Todavía no implementa todo el conjunto de funciones de `treatments` de Nightscout, como borrado o reconciliación avanzada.
 
 ## Advertencia Importante
 
-Usalo solo como sistema secundario o de recovery. No debe utilizarse para tomar decisiones clinicas, dosificacion o tratamiento.
+Úsalo solo como sistema secundario o de recuperación. No debe utilizarse para tomar decisiones clínicas, dosificación o tratamiento.
 
 ## Despliegue Muy Sencillo
 
-La opcion ideal para personas no tecnicas es usar el flujo oficial de Cloudflare con un repositorio publico y un boton `Deploy to Cloudflare`.
+La opción ideal para personas no técnicas es usar el flujo oficial de Cloudflare con un repositorio público y un botón `Deploy to Cloudflare`.
 
-Boton oficial de Cloudflare:
+Botón oficial de Cloudflare:
 
 <a href="https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite" target="_blank" rel="noopener noreferrer">
   <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" />
 </a>
 
-Cuando este proyecto este en GitHub o GitLab publico, ese boton permitira desplegarlo en pocos clics desde el navegador. Cloudflare recomienda este flujo para reducir la configuracion manual.
+Cuando este proyecto esté en GitHub o GitLab público, ese botón permitirá desplegarlo en pocos clics desde el navegador. Cloudflare recomienda este flujo para reducir la configuración manual.
 
-En la primera visita, TinyScout Lite genera automaticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez en la pantalla final de configuracion. Guarda ese secreto y usalo en xDrip+.
+En la primera visita, TinyScout Lite genera automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez en la pantalla final de configuración. Guarda ese secreto y úsalo en xDrip+.
 
-## Configuracion De xDrip+
+## Configuración De xDrip+
 
-Usa la opcion Nightscout Sync REST API y apunta a:
+Usa la opción Nightscout Sync REST API y apunta a:
 
 ```text
 https://API_SECRET@tu-worker.workers.dev/api/v1/
@@ -47,7 +47,7 @@ https://API_SECRET@tu-worker.workers.dev/api/v1/
 
 Es importante mantener el sufijo `/api/v1/`.
 
-## Como Comprobar Que Funciona
+## Cómo Comprobar Que Funciona
 
 Abre:
 
@@ -55,14 +55,14 @@ Abre:
 https://tu-worker.workers.dev/health
 ```
 
-La pagina de health muestra:
+La página de health muestra:
 
-- la ultima lectura de glucosa
-- el ultimo treatment
+- la última lectura de glucosa
+- el último treatment
 - la cantidad de lecturas guardadas
 - la cantidad de treatments guardados
 
-Tambien puedes revisar:
+También puedes revisar:
 
 ```text
 https://tu-worker.workers.dev/api/v1/status.json
@@ -70,8 +70,8 @@ https://tu-worker.workers.dev/api/v1/status.json
 
 ## Variables De Entorno
 
-- `API_SECRET`: override opcional. Si no se define, TinyScout Lite genera automaticamente un secreto de 6 caracteres en el primer setup.
-- `READ_PUBLIC`: `true` en esta configuracion. Las rutas GET de lecturas y estado quedan publicas para facilitar el acceso desde el navegador.
+- `API_SECRET`: override opcional. Si no se define, TinyScout Lite genera automáticamente un secreto de 6 caracteres en el primer setup.
+- `READ_PUBLIC`: `true` en esta configuración. Las rutas GET de lecturas y estado quedan públicas para facilitar el acceso desde el navegador.
 - `MAX_ENTRIES`: `2000` por defecto.
 
 ## Endpoints Disponibles
@@ -105,15 +105,15 @@ El soporte actual incluye:
 - `GET` con `count`
 - `GET` con filtros tipo Nightscout usando `find[...]`, por ejemplo `find[eventType]=Correction Bolus`
 - persistencia de campos habituales como `eventType`, `created_at`, `mills`, `insulin`, `carbs`, `notes` y `enteredBy`
-- conservacion de campos adicionales enviados por el cliente
+- conservación de campos adicionales enviados por el cliente
 
 Limitaciones actuales:
 
-- todavia no existe `DELETE /api/v1/treatments`
-- todavia no existe `DELETE /api/v1/treatments/{id}`
-- no implementa aun todo el comportamiento de UUIDs y reconciliacion de Nightscout
+- todavía no existe `DELETE /api/v1/treatments`
+- todavía no existe `DELETE /api/v1/treatments/{id}`
+- no implementa aún todo el comportamiento de UUIDs y reconciliación de Nightscout
 
-## Resolucion De Problemas
+## Resolución De Problemas
 
 ### No Llegan Datos
 
@@ -123,9 +123,9 @@ Limitaciones actuales:
 
 ### API_SECRET Incorrecto
 
-- Si el `POST` devuelve `401`, comprueba que estas usando el secreto de 6 caracteres mostrado en la primera pantalla de setup.
+- Si el `POST` devuelve `401`, comprueba que estás usando el secreto de 6 caracteres mostrado en la primera pantalla de setup.
 - Si quieres sustituirlo manualmente, guarda un nuevo override con `wrangler secret put API_SECRET`.
-- Si usas `https://SECRET@host/...`, asegurate de que el cliente envie Basic Auth correctamente.
+- Si usas `https://SECRET@host/...`, asegúrate de que el cliente envíe Basic Auth correctamente.
 
 ### xDrip+ Sin `/api/v1/`
 
@@ -133,13 +133,13 @@ Limitaciones actuales:
 
 ### Lecturas Antiguas
 
-- TinyScout Lite conserva solo las ultimas `MAX_ENTRIES`.
-- Si el reloj del movil esta mal, las lecturas pueden entrar con fechas antiguas.
+- TinyScout Lite conserva solo las últimas `MAX_ENTRIES`.
+- Si el reloj del móvil está mal, las lecturas pueden entrar con fechas antiguas.
 
 ### Diferencia Horaria
 
 - `dateString` se guarda en ISO UTC.
-- Comprueba la zona horaria y la hora del dispositivo que envia los datos.
+- Comprueba la zona horaria y la hora del dispositivo que envía los datos.
 
 ## Desarrollo Local
 
