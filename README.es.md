@@ -1,74 +1,98 @@
 # TinyScout Lite
 
-TinyScout Lite es un servidor mínimo compatible con una parte de la API de Nightscout. Está pensado como sistema secundario o de recuperación para recibir lecturas CGM desde xDrip+ y dejarlas disponibles para apps compatibles con Nightscout.
+TinyScout Lite es un respaldo simple y gratuito para tus datos de glucosa.
+
+Recibe lecturas desde `xDrip+` y las muestra en una pequeña página web y en endpoints compatibles con Nightscout. Está pensado como sistema secundario o de recuperación, no como sistema principal.
 
 Version in English: see [README.md](README.md).
 
-## Lo Que Sí Es
+## En Una Frase
 
-- Un Worker ligero en Cloudflare.
-- Un receptor de lecturas `entries` y `treatments`.
-- Un visor rapido de salud en `/health`.
-- Una version en espanol del visor en `/es/health`.
-- Una opción barata o gratuita para tener un respaldo sencillo.
-
-## Lo Que No Es
-
-- No es Nightscout completo.
-- No es un dispositivo médico.
-- No es una fuente principal para decisiones clínicas.
-- No implementa el soporte completo de perfiles ni `devicestatus` de Nightscout.
-- Todavía no implementa todo el conjunto de funciones de `treatments` de Nightscout, como borrado o reconciliación avanzada.
+Si tu Nightscout principal no está disponible, TinyScout Lite te da un respaldo muy pequeño que puedes desplegar gratis en Cloudflare en pocos clics.
 
 ## Advertencia Importante
 
-Úsalo solo como sistema secundario o de recuperación. No debe utilizarse para tomar decisiones clínicas, dosificación o tratamiento.
+- No es un dispositivo médico.
+- No debe usarse para dosificación ni decisiones de tratamiento.
+- Úsalo solo como respaldo o recuperación.
 
-## Despliegue Muy Sencillo
+## Para Quién Es
 
-La opción ideal para personas no técnicas es usar el flujo oficial de Cloudflare con un repositorio público y un botón `Deploy to Cloudflare`.
+Este proyecto es para ti si:
 
-Botón oficial de Cloudflare:
+- ya usas `xDrip+`
+- quieres un respaldo sencillo
+- quieres algo gratis o de coste muy bajo
+- no quieres mantener una instalación completa de Nightscout
+
+## Qué Hace
+
+- Recibe lecturas de glucosa desde `xDrip+`
+- Guarda lecturas recientes
+- Guarda `treatments`
+- Muestra una página simple de estado en el navegador
+- Ofrece endpoints básicos compatibles con Nightscout para apps compatibles
+
+## Qué No Hace
+
+- No es Nightscout completo
+- No es tu sistema principal
+- No incluye todas las funciones de Nightscout
+
+## Despliegue Gratis Más Rápido
+
+La forma más fácil es usar el flujo oficial de Cloudflare:
 
 <a href="https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite" target="_blank" rel="noopener noreferrer">
   <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" />
 </a>
 
-Este proyecto puede desplegarse en pocos clics usando el botón `Deploy to Cloudflare`. Cloudflare recomienda este flujo para reducir la configuración manual.
+## Despliegue En 3 Pasos
 
-En la primera visita, TinyScout Lite genera automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez en la pantalla final de configuración. Guarda ese secreto y úsalo en xDrip+.
+1. Haz clic en el botón `Deploy to Cloudflare`.
+2. Sigue las pantallas de Cloudflare hasta que termine el despliegue.
+3. Abre la URL que te da Cloudflare, por ejemplo `https://tu-worker.workers.dev/health`.
 
-## Configuración De xDrip+
+En la primera visita, TinyScout Lite crea automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez. Guárdalo en ese momento. Lo necesitarás en `xDrip+`.
 
-Usa la opción Nightscout Sync REST API y apunta a:
+## Configurar xDrip+
+
+En `xDrip+`, usa la opción `Nightscout Sync REST API` e introduce:
 
 ```text
 https://API_SECRET@tu-worker.workers.dev/api/v1/
 ```
 
-Es importante mantener el sufijo `/api/v1/`.
-TinyScout Lite acepta tanto el secreto en texto plano como el `SHA1(API_SECRET)` que xDrip suele enviar en la cabecera `api-secret`.
+Sustituye:
+
+- `API_SECRET` por tu secreto de 6 caracteres
+- `tu-worker.workers.dev` por la URL de Cloudflare
+
+Importante:
+
+- mantén `/api/v1/` exactamente como aparece
+- no borres la `/` final
 
 ## Cómo Comprobar Que Funciona
 
-Abre:
+Abre esta página en tu navegador:
 
 ```text
 https://tu-worker.workers.dev/health
 ```
 
-Version en espanol:
+Página en español:
 
 ```text
 https://tu-worker.workers.dev/es/health
 ```
 
-La página de health muestra:
+Deberías ver:
 
 - la última lectura de glucosa
-- el último treatment
-- la cantidad de lecturas guardadas
-- la cantidad de treatments guardados
+- el último tratamiento, si existe
+- cuántas lecturas hay guardadas
+- cuántos tratamientos hay guardados
 
 También puedes revisar:
 
@@ -76,102 +100,74 @@ También puedes revisar:
 https://tu-worker.workers.dev/api/v1/status.json
 ```
 
-## Variables De Entorno
+## Si Algo No Funciona
 
-- `API_SECRET`: override opcional. Si no se define, TinyScout Lite genera automáticamente un secreto de 6 caracteres en el primer setup.
-- `READ_PUBLIC`: `true` en esta configuración. Las rutas GET de lecturas y estado quedan públicas para facilitar el acceso desde el navegador.
-- `MAX_ENTRIES`: `2000` por defecto.
+### No Aparecen Datos
 
-## Endpoints Disponibles
+- Comprueba que `xDrip+` use la URL completa con `/api/v1/`
+- Comprueba que el `API_SECRET` sea correcto
+- Abre `/health` y revisa si aparecen lecturas recientes
+
+### Error 401
+
+- Lo más probable es que el secreto sea incorrecto
+- Usa el mismo secreto de 6 caracteres que viste en la primera configuración
+
+### Has Olvidado El Secreto
+
+- La solución más sencilla suele ser desplegar de nuevo y guardar bien el nuevo secreto
+- Los usuarios avanzados pueden cambiarlo manualmente con Wrangler secrets
+
+### La Página Abre Pero Los Datos Son Antiguos
+
+- Revisa la hora y la zona horaria del teléfono
+- TinyScout Lite solo conserva las lecturas más recientes
+
+## Notas Avanzadas
+
+TinyScout Lite también soporta:
+
+- `entries`
+- `treatments`
+- soporte mínimo de `profile`
+- `devicestatus` como colección vacía por compatibilidad
+
+El soporte actual de perfiles incluye:
+
+- `GET /api/v1/profile/current`
+- `GET /api/v1/profile`
+- `POST /api/v1/profile`
+- `PUT /api/v1/profile`
+
+Limitaciones actuales:
+
+- no es Nightscout completo
+- no implementa rutas de borrado para `treatments`
+- no guarda historial completo de perfiles
+
+## Referencia Técnica
+
+### Variables De Entorno
+
+- `API_SECRET`: secreto manual opcional
+- `READ_PUBLIC`: `true` en esta configuración
+- `MAX_ENTRIES`: `2000` por defecto
+
+### Endpoints Principales
 
 - `POST /api/v1/entries`
-- `POST /api/v1/entries.json`
 - `GET /api/v1/entries`
-- `GET /api/v1/entries.json`
-- `GET /api/v1/entries/sgv`
-- `GET /api/v1/entries/sgv.json`
 - `GET /api/v1/entries/current`
-- `GET /api/v1/entries/current.json`
 - `GET /api/v1/status.json`
-- `GET /api/v1/treatments`
-- `GET /api/v1/treatments.json`
 - `POST /api/v1/treatments`
-- `POST /api/v1/treatments.json`
-- `GET /api/v1/profile`
-- `GET /api/v1/profile.json`
+- `GET /api/v1/treatments`
 - `GET /api/v1/profile/current`
-- `GET /api/v1/profile/current.json`
+- `GET /api/v1/profile`
 - `POST /api/v1/profile`
-- `POST /api/v1/profile.json`
 - `PUT /api/v1/profile`
-- `PUT /api/v1/profile.json`
 - `GET /api/v1/devicestatus`
-- `GET /api/v1/devicestatus.json`
 - `GET /health`
 - `GET /es/health`
-
-## Soporte De Treatments
-
-TinyScout Lite ahora guarda y devuelve `treatments` al estilo Nightscout.
-
-El soporte actual incluye:
-
-- `POST` de un objeto treatment o un array de treatments
-- `GET` con `count`
-- `GET` con filtros tipo Nightscout usando `find[...]`, por ejemplo `find[eventType]=Correction Bolus`
-- persistencia de campos habituales como `eventType`, `created_at`, `mills`, `insulin`, `carbs`, `notes` y `enteredBy`
-- conservación de campos adicionales enviados por el cliente
-
-Limitaciones actuales:
-
-- todavía no existe `DELETE /api/v1/treatments`
-- todavía no existe `DELETE /api/v1/treatments/{id}`
-- no implementa aún todo el comportamiento de UUIDs y reconciliación de Nightscout
-
-## Soporte De Profiles
-
-TinyScout Lite ahora incluye compatibilidad mínima con perfiles Nightscout para integraciones como `tconnectsync`.
-
-El soporte actual incluye:
-
-- `GET /api/v1/profile/current` y `.json`
-- `GET /api/v1/profile` y `.json`
-- `POST` y `PUT` de un objeto de perfil Nightscout
-- persistencia del último perfil guardado
-
-Limitaciones actuales:
-
-- no mantiene historial de múltiples perfiles con distintas `startDate`
-- no implementa borrado de perfiles
-- `devicestatus` sigue devolviendo una colección vacía
-
-## Resolución De Problemas
-
-### No Llegan Datos
-
-- Revisa que xDrip+ use la URL completa con `/api/v1/`.
-- Comprueba que `API_SECRET` sea correcto.
-- Revisa `/health` para ver si hay lecturas y treatments recientes.
-
-### API_SECRET Incorrecto
-
-- Si el `POST` devuelve `401`, comprueba que estás usando el secreto de 6 caracteres mostrado en la primera pantalla de setup.
-- Si quieres sustituirlo manualmente, guarda un nuevo override con `wrangler secret put API_SECRET`.
-- Si usas `https://SECRET@host/...`, asegúrate de que el cliente envíe Basic Auth correctamente.
-
-### xDrip+ Sin `/api/v1/`
-
-- Muchas integraciones fallan si la URL termina antes. Usa exactamente `https://API_SECRET@tu-worker.workers.dev/api/v1/`.
-
-### Lecturas Antiguas
-
-- TinyScout Lite conserva solo las últimas `MAX_ENTRIES`.
-- Si el reloj del móvil está mal, las lecturas pueden entrar con fechas antiguas.
-
-### Diferencia Horaria
-
-- `dateString` se guarda en ISO UTC.
-- Comprueba la zona horaria y la hora del dispositivo que envía los datos.
 
 ## Desarrollo Local
 
