@@ -328,6 +328,44 @@ describe("api", () => {
     expect(html).toContain("Stored treatments: 1");
   });
 
+  it("renders the latest treatment with insulin on the health page", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
+    await postTreatments(
+      [
+        {
+          eventType: "Site Change",
+          created_at: "2026-06-10T20:10:00.000Z",
+          notes: "No insulin here"
+        },
+        {
+          eventType: "Correction Bolus",
+          created_at: "2026-06-10T20:05:00.000Z",
+          insulin: 1.2,
+          notes: "Last insulin treatment"
+        },
+        {
+          eventType: "Carb Correction",
+          created_at: "2026-06-10T20:00:00.000Z",
+          carbs: 12
+        }
+      ],
+      secretHeader(secret)
+    );
+
+    const response = await SELF.fetch("https://example.com/health", {
+      headers: secretHeader(secret)
+    });
+
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expect(html).toContain("Latest treatment");
+    expect(html).toContain("Correction Bolus");
+    expect(html).toContain("Insulin: 1.2 U");
+    expect(html).not.toContain("Site Change");
+  });
+
   it("renders the spanish health page", async () => {
     const setupResponse = await SELF.fetch("https://example.com/es/health");
     expect(setupResponse.status).toBe(200);

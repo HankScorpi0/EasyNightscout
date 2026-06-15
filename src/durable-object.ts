@@ -177,9 +177,16 @@ export class EntriesDurableObject {
 
   private async getTreatmentsSnapshot(): Promise<TreatmentsSnapshot> {
     const treatments = await this.getTreatments();
+    const latestWithInsulin =
+      treatments.find(
+        (treatment) =>
+          typeof treatment.insulin === "number" ||
+          (typeof treatment.insulin === "string" && treatment.insulin.trim() !== "")
+      ) ?? null;
+
     return {
       count: treatments.length,
-      last: treatments[0] ?? null
+      last: latestWithInsulin
     };
   }
 }
