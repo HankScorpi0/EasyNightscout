@@ -206,6 +206,22 @@ describe("api", () => {
     expect(await treatmentsResponse.json()).toEqual([]);
   });
 
+  it("returns a helpful payload for the api base path", async () => {
+    const response = await SELF.fetch("https://example.com/api/v1");
+    expect(response.status).toBe(200);
+
+    const payload = (await response.json()) as {
+      status: string;
+      endpoints: { status: string; entries: string };
+      message: string;
+    };
+
+    expect(payload.status).toBe("ok");
+    expect(payload.message).toContain("Nightscout-compatible API base");
+    expect(payload.endpoints.status).toBe("/api/v1/status.json");
+    expect(payload.endpoints.entries).toBe("/api/v1/entries.json");
+  });
+
   it("renders the health page", async () => {
     const { secret, cookie } = await initializeSetup();
     await acknowledgeSetup(cookie);

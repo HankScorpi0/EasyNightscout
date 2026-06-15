@@ -19,6 +19,7 @@ export { EntriesDurableObject };
 const APP_NAME = "TinyScout Lite";
 const APP_VERSION = "0.1.0";
 const EMPTY_COLLECTION = [];
+const API_BASE_PATHS = new Set(["/api/v1", "/api/v1/"]);
 
 function getEntriesStub(env: Env): DurableObjectStub<EntriesDurableObject> {
   const id = env.ENTRIES_DO.idFromName("global");
@@ -160,6 +161,22 @@ function isEntriesReadRoute(pathname: string): boolean {
   ].includes(pathname);
 }
 
+function getWriteDebugContext(request: Request, expectedSecret: string | null): Record<string, unknown> {
+  const url = new URL(request.url);
+
+  return {
+    method: request.method,
+    path: url.pathname,
+    hasExpectedSecret: Boolean(expectedSecret),
+    hasApiSecretHeader: Boolean(request.headers.get("api-secret")),
+    hasAuthorizationHeader: Boolean(request.headers.get("Authorization")),
+    hasUrlUsername: Boolean(url.username),
+    contentType: request.headers.get("Content-Type"),
+    contentLength: request.headers.get("Content-Length"),
+    userAgent: request.headers.get("User-Agent")
+  };
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
@@ -263,9 +280,26 @@ export default {
       return jsonResponse(payload);
     }
 
+    if (request.method === "GET" && API_BASE_PATHS.has(url.pathname)) {
+      return jsonResponse({
+        status: "ok",
+        name: APP_NAME,
+        version: APP_VERSION,
+        message: "Nightscout-compatible API base. Use /api/v1/status.json or /api/v1/entries.json.",
+        endpoints: {
+          status: "/api/v1/status.json",
+          entries: "/api/v1/entries.json",
+          treatments: "/api/v1/treatments.json",
+          health: "/health"
+        }
+      });
+    }
+
     if (request.method === "POST" && ["/api/v1/treatments", "/api/v1/treatments.json"].includes(url.pathname)) {
       const expectedSecret = await resolveConfiguredSecret(env);
+      const debugContext = getWriteDebugContext(request, expectedSecret);
       if (!expectedSecret) {
+        console.warn("Rejected treatment write: setup incomplete", debugContext);
         return jsonResponse(
           { error: "Setup incomplete. Open /health once to generate the API secret." },
           { status: 503 }
@@ -273,6 +307,7 @@ export default {
       }
 
       if (!hasValidSecret(request, expectedSecret)) {
+        console.warn("Rejected treatment write: invalid secret", debugContext);
         const authError = requireConfiguredWriteAuth(request, expectedSecret);
         if (authError) {
           return authError;
@@ -283,8 +318,13 @@ export default {
         const body = await parsePostBody(request);
         const treatments = normalizeTreatments(body);
         const result = await storeTreatments(env, treatments);
+        console.log("Stored treatments", { ...debugContext, stored: result.stored, total: result.total });
         return jsonResponse(result, { status: 201 });
       } catch (error) {
+        console.warn("Rejected treatment write: invalid payload", {
+          ...debugContext,
+          error: error instanceof Error ? error.message : "Invalid request body."
+        });
         return jsonResponse(
           { error: error instanceof Error ? error.message : "Invalid request body." },
           { status: 400 }
@@ -326,7 +366,9 @@ export default {
 
     if (request.method === "POST" && ["/api/v1/entries", "/api/v1/entries.json"].includes(url.pathname)) {
       const expectedSecret = await resolveConfiguredSecret(env);
+      const debugContext = getWriteDebugContext(request, expectedSecret);
       if (!expectedSecret) {
+        console.warn("Rejected entry write: setup incomplete", debugContext);
         return jsonResponse(
           { error: "Setup incomplete. Open /health once to generate the API secret." },
           { status: 503 }
@@ -334,6 +376,7 @@ export default {
       }
 
       if (!hasValidSecret(request, expectedSecret)) {
+        console.warn("Rejected entry write: invalid secret", debugContext);
         const authError = requireConfiguredWriteAuth(request, expectedSecret);
         if (authError) {
           return authError;
@@ -344,8 +387,13 @@ export default {
         const body = await parsePostBody(request);
         const entries = normalizeEntries(body);
         const result = await storeEntries(env, entries);
+        console.log("Stored entries", { ...debugContext, stored: result.stored, total: result.total });
         return jsonResponse(result, { status: 201 });
       } catch (error) {
+        console.warn("Rejected entry write: invalid payload", {
+          ...debugContext,
+          error: error instanceof Error ? error.message : "Invalid request body."
+        });
         return jsonResponse(
           { error: error instanceof Error ? error.message : "Invalid request body." },
           { status: 400 }
