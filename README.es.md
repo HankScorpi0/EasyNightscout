@@ -8,7 +8,8 @@ Version in English: see [README.md](README.md).
 
 - Un Worker ligero en Cloudflare.
 - Un receptor de lecturas `entries` y `treatments`.
-- Un visor rápido de salud en `/health`.
+- Un visor rapido de salud en `/health`.
+- Una version en espanol del visor en `/es/health`.
 - Una opción barata o gratuita para tener un respaldo sencillo.
 
 ## Lo Que No Es
@@ -46,6 +47,7 @@ https://API_SECRET@tu-worker.workers.dev/api/v1/
 ```
 
 Es importante mantener el sufijo `/api/v1/`.
+TinyScout Lite acepta tanto el secreto en texto plano como el `SHA1(API_SECRET)` que xDrip suele enviar en la cabecera `api-secret`.
 
 ## Cómo Comprobar Que Funciona
 
@@ -53,6 +55,12 @@ Abre:
 
 ```text
 https://tu-worker.workers.dev/health
+```
+
+Version en espanol:
+
+```text
+https://tu-worker.workers.dev/es/health
 ```
 
 La página de health muestra:
@@ -94,6 +102,7 @@ https://tu-worker.workers.dev/api/v1/status.json
 - `GET /api/v1/devicestatus`
 - `GET /api/v1/devicestatus.json`
 - `GET /health`
+- `GET /es/health`
 
 ## Soporte De Treatments
 

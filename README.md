@@ -9,6 +9,7 @@ Spanish version: see [README.es.md](README.es.md).
 - A lightweight Cloudflare Worker.
 - A receiver for `entries` readings and `treatments`.
 - A quick health view at `/health`.
+- A Spanish health view at `/es/health`.
 - A low-cost or free option for simple backup access.
 
 ## What It Is Not
@@ -46,6 +47,7 @@ https://API_SECRET@your-worker.workers.dev/api/v1/
 ```
 
 It is important to keep the `/api/v1/` suffix.
+TinyScout Lite accepts both the plain-text secret and the `SHA1(API_SECRET)` value that xDrip commonly sends in the `api-secret` header.
 
 ## How To Check That It Works
 
@@ -53,6 +55,12 @@ Open:
 
 ```text
 https://your-worker.workers.dev/health
+```
+
+Spanish version:
+
+```text
+https://your-worker.workers.dev/es/health
 ```
 
 The health page shows:
@@ -94,6 +102,7 @@ https://your-worker.workers.dev/api/v1/status.json
 - `GET /api/v1/devicestatus`
 - `GET /api/v1/devicestatus.json`
 - `GET /health`
+- `GET /es/health`
 
 ## Treatments Support
 

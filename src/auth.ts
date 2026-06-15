@@ -49,29 +49,48 @@ function getSecretFromRequest(request: Request): string | null {
   return null;
 }
 
-export function hasValidSecret(request: Request, expected: string | null | undefined): boolean {
+async function sha1Hex(input: string): Promise<string> {
+  const bytes = new TextEncoder().encode(input);
+  const digest = await crypto.subtle.digest("SHA-1", bytes);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+export async function hasValidSecret(request: Request, expected: string | null | undefined): Promise<boolean> {
   if (!expected) {
     return false;
   }
 
-  return getSecretFromRequest(request) === expected;
+  const supplied = getSecretFromRequest(request);
+  if (!supplied) {
+    return false;
+  }
+
+  if (supplied === expected) {
+    return true;
+  }
+
+  const expectedSha1 = await sha1Hex(expected);
+  return supplied.toLowerCase() === expectedSha1;
 }
 
-export function requireConfiguredWriteAuth(request: Request, expected: string | null | undefined): Response | null {
+export async function requireConfiguredWriteAuth(
+  request: Request,
+  expected: string | null | undefined
+): Promise<Response | null> {
   if (!expected) {
     return null;
   }
 
-  return hasValidSecret(request, expected) ? null : unauthorized();
+  return (await hasValidSecret(request, expected)) ? null : unauthorized();
 }
 
-export function requireWriteAuth(request: Request, env: Env): Response | null {
+export function requireWriteAuth(request: Request, env: Env): Promise<Response | null> {
   return requireConfiguredWriteAuth(request, env.API_SECRET);
 }
 
-export function requireReadAuth(request: Request, env: Env): Response | null {
+export function requireReadAuth(request: Request, env: Env): Promise<Response | null> {
   if (isReadPublic(env)) {
-    return null;
+    return Promise.resolve(null);
   }
 
   return requireConfiguredWriteAuth(request, env.API_SECRET);

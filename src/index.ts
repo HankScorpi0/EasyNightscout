@@ -21,6 +21,18 @@ const APP_VERSION = "0.1.0";
 const EMPTY_COLLECTION = [];
 const API_BASE_PATHS = new Set(["/api/v1", "/api/v1/"]);
 
+function getHealthLocale(pathname: string): "en" | "es" | null {
+  if (pathname === "/health" || pathname === "/setup/acknowledge") {
+    return "en";
+  }
+
+  if (pathname === "/es/health" || pathname === "/es/setup/acknowledge") {
+    return "es";
+  }
+
+  return null;
+}
+
 function getEntriesStub(env: Env): DurableObjectStub<EntriesDurableObject> {
   const id = env.ENTRIES_DO.idFromName("global");
   return env.ENTRIES_DO.get(id) as DurableObjectStub<EntriesDurableObject>;
@@ -189,7 +201,9 @@ export default {
       return Response.redirect(`${url.origin}/health`, 302);
     }
 
-    if (request.method === "POST" && url.pathname === "/setup/acknowledge") {
+    const healthLocale = getHealthLocale(url.pathname);
+
+    if (request.method === "POST" && (url.pathname === "/setup/acknowledge" || url.pathname === "/es/setup/acknowledge")) {
       const setupState = await getSetupState(env);
       const cookieToken = getCookie(request, "tinyscout_setup");
       if (!setupState?.revealToken || !cookieToken || cookieToken !== setupState.revealToken) {
@@ -199,7 +213,7 @@ export default {
             count: 0,
             baseUrl: url.origin,
             setupPending: true
-          }),
+          }, healthLocale ?? "en"),
           {
             status: 403,
             headers: { "Set-Cookie": clearSetupCookie() }
@@ -211,13 +225,13 @@ export default {
       return new Response(null, {
         status: 303,
         headers: {
-          Location: `${url.origin}/health`,
+          Location: `${url.origin}${healthLocale === "es" ? "/es/health" : "/health"}`,
           "Set-Cookie": clearSetupCookie()
         }
       });
     }
 
-    if (url.pathname === "/health") {
+    if (healthLocale && request.method === "GET" && (url.pathname === "/health" || url.pathname === "/es/health")) {
       let setupState = await getSetupState(env);
       const setupCookie = getCookie(request, "tinyscout_setup");
       let setCookieHeader: string | null = null;
@@ -234,7 +248,7 @@ export default {
           ? null
           : env.READ_PUBLIC?.toLowerCase() === "true"
             ? null
-            : requireConfiguredWriteAuth(request, expectedSecret);
+            : await requireConfiguredWriteAuth(request, expectedSecret);
       if (authError) {
         return authError;
       }
@@ -253,7 +267,7 @@ export default {
               ? setupState.apiSecret
               : null,
           setupPending: Boolean(setupState?.revealToken) && effectiveSetupToken !== setupState?.revealToken
-        }),
+        }, healthLocale),
         setCookieHeader ? { headers: { "Set-Cookie": setCookieHeader } } : undefined
       );
     }
@@ -263,7 +277,7 @@ export default {
       const authError =
         env.READ_PUBLIC?.toLowerCase() === "true"
           ? null
-          : requireConfiguredWriteAuth(request, expectedSecret);
+          : await requireConfiguredWriteAuth(request, expectedSecret);
       if (authError) {
         return authError;
       }
@@ -306,9 +320,9 @@ export default {
         );
       }
 
-      if (!hasValidSecret(request, expectedSecret)) {
+      if (!(await hasValidSecret(request, expectedSecret))) {
         console.warn("Rejected treatment write: invalid secret", debugContext);
-        const authError = requireConfiguredWriteAuth(request, expectedSecret);
+        const authError = await requireConfiguredWriteAuth(request, expectedSecret);
         if (authError) {
           return authError;
         }
@@ -337,7 +351,7 @@ export default {
       const authError =
         env.READ_PUBLIC?.toLowerCase() === "true"
           ? null
-          : requireConfiguredWriteAuth(request, expectedSecret);
+          : await requireConfiguredWriteAuth(request, expectedSecret);
       if (authError) {
         return authError;
       }
@@ -356,7 +370,7 @@ export default {
       const authError =
         env.READ_PUBLIC?.toLowerCase() === "true"
           ? null
-          : requireConfiguredWriteAuth(request, expectedSecret);
+          : await requireConfiguredWriteAuth(request, expectedSecret);
       if (authError) {
         return authError;
       }
@@ -375,9 +389,9 @@ export default {
         );
       }
 
-      if (!hasValidSecret(request, expectedSecret)) {
+      if (!(await hasValidSecret(request, expectedSecret))) {
         console.warn("Rejected entry write: invalid secret", debugContext);
-        const authError = requireConfiguredWriteAuth(request, expectedSecret);
+        const authError = await requireConfiguredWriteAuth(request, expectedSecret);
         if (authError) {
           return authError;
         }
@@ -406,7 +420,7 @@ export default {
       const authError =
         env.READ_PUBLIC?.toLowerCase() === "true"
           ? null
-          : requireConfiguredWriteAuth(request, expectedSecret);
+          : await requireConfiguredWriteAuth(request, expectedSecret);
       if (authError) {
         return authError;
       }

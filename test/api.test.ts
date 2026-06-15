@@ -35,6 +35,11 @@ function secretHeader(secret: string): HeadersInit {
   return { "api-secret": secret };
 }
 
+async function sha1(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 async function postEntries(body: unknown, headers: HeadersInit) {
   return SELF.fetch("https://example.com/api/v1/entries.json", {
     method: "POST",
@@ -87,6 +92,18 @@ describe("api", () => {
     });
 
     expect(response.status).toBe(401);
+  });
+
+  it("accepts xDrip-style SHA1 api-secret headers", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
+    const response = await postEntries(
+      { sgv: 143, date: 2781111111111 },
+      secretHeader(await sha1(secret))
+    );
+
+    expect(response.status).toBe(201);
   });
 
   it("accepts single-object POST and returns current entry", async () => {
@@ -249,5 +266,50 @@ describe("api", () => {
     expect(html).toContain("Correction Bolus");
     expect(html).toContain("Insulin: 1.2 U");
     expect(html).toContain("Stored treatments: 1");
+  });
+
+  it("renders the spanish health page", async () => {
+    const setupResponse = await SELF.fetch("https://example.com/es/health");
+    expect(setupResponse.status).toBe(200);
+    const setupCookie = setupResponse.headers.get("Set-Cookie");
+    expect(setupCookie).toContain("tinyscout_setup=");
+    const setupHtml = await setupResponse.text();
+    expect(setupHtml).toContain('<html lang="es">');
+    expect(setupHtml).toContain("Configuracion completada");
+    expect(setupHtml).toContain('action="/es/setup/acknowledge"');
+    const secretMatch = setupHtml.match(/<code>([a-z2-9]{6})<\/code>/);
+    expect(secretMatch?.[1]).toBeTruthy();
+    const secret = secretMatch![1];
+
+    const acknowledgeResponse = await SELF.fetch("https://example.com/es/setup/acknowledge", {
+      method: "POST",
+      headers: { Cookie: setupCookie!.split(";", 1)[0] },
+      redirect: "manual"
+    });
+    expect(acknowledgeResponse.status).toBe(303);
+    expect(acknowledgeResponse.headers.get("Location")).toBe("https://example.com/es/health");
+
+    await postEntries({ sgv: 143, date: 1781111111111 }, secretHeader(secret));
+    await postTreatments(
+      {
+        eventType: "Correction Bolus",
+        created_at: "2026-06-10T20:05:00.000Z",
+        insulin: 1.2,
+        notes: "Test bolus"
+      },
+      secretHeader(secret)
+    );
+
+    const response = await SELF.fetch("https://example.com/es/health", {
+      headers: secretHeader(secret)
+    });
+
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expect(html).toContain("TinyScout Lite esta funcionando");
+    expect(html).toContain("Ultimo treatment");
+    expect(html).toContain("Lecturas guardadas");
+    expect(html).toContain("Treatments guardados: 1");
+    expect(html).toContain("Insulina: 1.2 U");
   });
 });
