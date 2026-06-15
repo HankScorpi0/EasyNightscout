@@ -1,14 +1,14 @@
 # TinyScout Lite
 
-TinyScout Lite es un respaldo simple y gratuito para tus datos de glucosa.
+TinyScout Lite es una versión muy reducida de Nightscout que puedes desplegar gratis en la nube con Cloudflare.
 
-Recibe lecturas desde `xDrip+` y las muestra en una pequeña página web y en endpoints compatibles con Nightscout. Está pensado como sistema secundario o de recuperación, no como sistema principal.
+Su idea es muy simple: recibir tus datos y hacerlos disponibles para cualquier app compatible con Nightscout, sin tener que montar una instalación completa.
 
 Version in English: see [README.md](README.md).
 
 ## En Una Frase
 
-Si tu Nightscout principal no está disponible, TinyScout Lite te da un respaldo muy pequeño que puedes desplegar gratis en Cloudflare en pocos clics.
+TinyScout Lite te da una forma gratuita y sencilla de tener un servicio compatible con Nightscout en la nube.
 
 ## Advertencia Importante
 
@@ -21,23 +21,37 @@ Si tu Nightscout principal no está disponible, TinyScout Lite te da un respaldo
 Este proyecto es para ti si:
 
 - ya usas `xDrip+`
-- quieres un respaldo sencillo
-- quieres algo gratis o de coste muy bajo
+- quieres un despliegue gratis en la nube
+- quieres un respaldo sencillo si tu proveedor principal falla
+- prefieres usar apps compatibles con Nightscout como `Zukkah`
 - no quieres mantener una instalación completa de Nightscout
 
 ## Qué Hace
 
 - Recibe lecturas de glucosa desde `xDrip+`
+- Funciona con apps compatibles con Nightscout
 - Guarda lecturas recientes
 - Guarda `treatments`
 - Muestra una página simple de estado en el navegador
-- Ofrece endpoints básicos compatibles con Nightscout para apps compatibles
+- Ofrece endpoints básicos compatibles con Nightscout
+
+## Cuándo Tiene Sentido Usarlo
+
+- Como servicio secundario si tu proveedor oficial falla
+- Como alternativa sencilla si solo quieres alimentar apps compatibles con Nightscout
+- Si te gustan apps no oficiales como `Zukkah` que muestran datos que para ti son importantes, por ejemplo la diferencia entre la glucosa actual y la anterior
+- Si quieres algo muy pequeño, gratuito y fácil de desplegar
 
 ## Qué No Hace
 
 - No es Nightscout completo
 - No es tu sistema principal
 - No incluye todas las funciones de Nightscout
+- No ofrece una aplicación web completa con gráficas, informes o análisis avanzados
+
+## Si Quieres Gráficas Y Reportes
+
+Si buscas una web completa con gráficas, reportes y más herramientas de análisis, lo recomendable es usar Nightscout.
 
 ## Despliegue Gratis Más Rápido
 
@@ -54,6 +68,10 @@ La forma más fácil es usar el flujo oficial de Cloudflare:
 3. Abre la URL que te da Cloudflare, por ejemplo `https://tu-worker.workers.dev/health`.
 
 En la primera visita, TinyScout Lite crea automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez. Guárdalo en ese momento. Lo necesitarás en `xDrip+`.
+
+## Compatibilidad
+
+TinyScout Lite está pensado para funcionar con aplicaciones que ya soportan Nightscout.
 
 ## Configurar xDrip+
 
