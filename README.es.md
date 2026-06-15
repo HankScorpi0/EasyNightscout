@@ -99,6 +99,12 @@ https://tu-worker.workers.dev/api/v1/status.json
 - `POST /api/v1/treatments.json`
 - `GET /api/v1/profile`
 - `GET /api/v1/profile.json`
+- `GET /api/v1/profile/current`
+- `GET /api/v1/profile/current.json`
+- `POST /api/v1/profile`
+- `POST /api/v1/profile.json`
+- `PUT /api/v1/profile`
+- `PUT /api/v1/profile.json`
 - `GET /api/v1/devicestatus`
 - `GET /api/v1/devicestatus.json`
 - `GET /health`
@@ -121,6 +127,23 @@ Limitaciones actuales:
 - todavía no existe `DELETE /api/v1/treatments`
 - todavía no existe `DELETE /api/v1/treatments/{id}`
 - no implementa aún todo el comportamiento de UUIDs y reconciliación de Nightscout
+
+## Soporte De Profiles
+
+TinyScout Lite ahora incluye compatibilidad mínima con perfiles Nightscout para integraciones como `tconnectsync`.
+
+El soporte actual incluye:
+
+- `GET /api/v1/profile/current` y `.json`
+- `GET /api/v1/profile` y `.json`
+- `POST` y `PUT` de un objeto de perfil Nightscout
+- persistencia del último perfil guardado
+
+Limitaciones actuales:
+
+- no mantiene historial de múltiples perfiles con distintas `startDate`
+- no implementa borrado de perfiles
+- `devicestatus` sigue devolviendo una colección vacía
 
 ## Resolución De Problemas
 

@@ -48,6 +48,16 @@ export interface TreatmentsSnapshot {
   last: Treatment | null;
 }
 
+export interface NightscoutProfileRecord {
+  _id?: string;
+  defaultProfile?: string;
+  enteredBy?: string;
+  startDate?: string;
+  created_at?: string;
+  store?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
 export interface Treatment {
   _id: string;
   eventType: string;

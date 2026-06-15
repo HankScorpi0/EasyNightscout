@@ -62,6 +62,17 @@ async function postTreatments(body: unknown, headers: HeadersInit) {
   });
 }
 
+async function postProfile(body: unknown, headers: HeadersInit, method: "POST" | "PUT" = "POST") {
+  return SELF.fetch("https://example.com/api/v1/profile", {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...headers
+    },
+    body: JSON.stringify(body)
+  });
+}
+
 describe("api", () => {
   it("generates the setup secret on first health visit and reveals it once", async () => {
     const { secret, cookie } = await initializeSetup();
@@ -78,7 +89,7 @@ describe("api", () => {
       { sgv: 143, date: 2781111111111 },
       secretHeader(secret)
     );
-    expect(postResponse.status).toBe(201);
+    expect(postResponse.status).toBe(200);
   });
 
   it("rejects POST without API secret", async () => {
@@ -103,7 +114,7 @@ describe("api", () => {
       secretHeader(await sha1(secret))
     );
 
-    expect(response.status).toBe(201);
+    expect(response.status).toBe(200);
   });
 
   it("accepts single-object POST and returns current entry", async () => {
@@ -118,7 +129,7 @@ describe("api", () => {
       device: "xDrip"
     }, secretHeader(secret));
 
-    expect(postResponse.status).toBe(201);
+    expect(postResponse.status).toBe(200);
 
     const currentResponse = await SELF.fetch(
       "https://example.com/api/v1/entries/current.json",
@@ -191,7 +202,7 @@ describe("api", () => {
       }
     ], secretHeader(secret));
 
-    expect(postResponse.status).toBe(201);
+    expect(postResponse.status).toBe(200);
 
     const treatmentsResponse = await SELF.fetch(
       "https://example.com/api/v1/treatments.json?count=1&find[eventType]=Correction%20Bolus",
@@ -221,6 +232,55 @@ describe("api", () => {
       headers: secretHeader(secret)
     });
     expect(await treatmentsResponse.json()).toEqual([]);
+  });
+
+  it("supports Nightscout profile current and profile writes for tconnectsync", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
+    const emptyCurrentResponse = await SELF.fetch("https://example.com/api/v1/profile/current", {
+      headers: secretHeader(secret)
+    });
+    expect(emptyCurrentResponse.status).toBe(200);
+    expect(await emptyCurrentResponse.json()).toEqual({});
+
+    const profilePayload = {
+      defaultProfile: "Verano",
+      enteredBy: "Pump (tconnectsync)",
+      startDate: "2026-06-15T08:00:00.000Z",
+      created_at: "2026-06-15T08:00:00.000Z",
+      store: {
+        Verano: {
+          dia: "5",
+          basal: [{ time: "00:00", timeAsSeconds: 0, value: 0.18 }],
+          sens: [{ time: "00:00", timeAsSeconds: 0, value: 180 }],
+          carbratio: [{ time: "00:00", timeAsSeconds: 0, value: 25 }],
+          target_low: [{ time: "00:00", timeAsSeconds: 0, value: 120 }],
+          target_high: [{ time: "00:00", timeAsSeconds: 0, value: 120 }],
+          units: "mg/dl",
+          timezone: "Europe/Madrid"
+        }
+      }
+    };
+
+    const postResponse = await postProfile(profilePayload, secretHeader(secret));
+    expect(postResponse.status).toBe(200);
+
+    const currentResponse = await SELF.fetch("https://example.com/api/v1/profile/current?api_secret=test", {
+      headers: secretHeader(await sha1(secret))
+    });
+    expect(currentResponse.status).toBe(200);
+    const currentProfile = await currentResponse.json();
+    expect(currentProfile).toMatchObject({
+      defaultProfile: "Verano",
+      enteredBy: "Pump (tconnectsync)"
+    });
+
+    const listResponse = await SELF.fetch("https://example.com/api/v1/profile.json", {
+      headers: secretHeader(secret)
+    });
+    expect(listResponse.status).toBe(200);
+    expect(await listResponse.json()).toEqual([profilePayload]);
   });
 
   it("returns a helpful payload for the api base path", async () => {

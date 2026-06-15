@@ -12,7 +12,15 @@ import {
 import { renderHealthPage } from "./health";
 import { htmlResponse, jsonResponse } from "./responses";
 import { normalizeTreatments, parseTreatmentQuery } from "./treatments";
-import type { CgmEntry, Env, SetupState, StatusPayload, Treatment, TreatmentsSnapshot } from "./types";
+import type {
+  CgmEntry,
+  Env,
+  NightscoutProfileRecord,
+  SetupState,
+  StatusPayload,
+  Treatment,
+  TreatmentsSnapshot
+} from "./types";
 
 export { EntriesDurableObject };
 
@@ -69,6 +77,18 @@ async function getTreatmentsSnapshot(env: Env): Promise<TreatmentsSnapshot> {
   return (await response.json()) as TreatmentsSnapshot;
 }
 
+async function getCurrentProfile(env: Env): Promise<NightscoutProfileRecord> {
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch("https://entries.internal/profile/current");
+  return (await response.json()) as NightscoutProfileRecord;
+}
+
+async function listProfiles(env: Env): Promise<NightscoutProfileRecord[]> {
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch("https://entries.internal/profile");
+  return (await response.json()) as NightscoutProfileRecord[];
+}
+
 async function listTreatments(env: Env, query: ReturnType<typeof parseTreatmentQuery>): Promise<Treatment[]> {
   const stub = getEntriesStub(env);
   const response = await stub.fetch(
@@ -86,6 +106,17 @@ async function storeTreatments(env: Env, treatments: Treatment[]): Promise<{ sto
   });
 
   return (await response.json()) as { stored: number; total: number };
+}
+
+async function storeProfile(env: Env, profile: NightscoutProfileRecord, method: "POST" | "PUT"): Promise<NightscoutProfileRecord> {
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch("https://entries.internal/profile", {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(profile)
+  });
+
+  return (await response.json()) as NightscoutProfileRecord;
 }
 
 async function getSetupState(env: Env): Promise<SetupState | null> {
@@ -333,7 +364,7 @@ export default {
         const treatments = normalizeTreatments(body);
         const result = await storeTreatments(env, treatments);
         console.log("Stored treatments", { ...debugContext, stored: result.stored, total: result.total });
-        return jsonResponse(result, { status: 201 });
+        return jsonResponse(result);
       } catch (error) {
         console.warn("Rejected treatment write: invalid payload", {
           ...debugContext,
@@ -361,11 +392,75 @@ export default {
       return jsonResponse(treatments);
     }
 
-    if (
-      ["/api/v1/profile", "/api/v1/profile.json", "/api/v1/devicestatus", "/api/v1/devicestatus.json"].includes(
-        url.pathname
-      )
-    ) {
+    if (request.method === "GET" && ["/api/v1/profile/current", "/api/v1/profile/current.json"].includes(url.pathname)) {
+      const expectedSecret = await resolveConfiguredSecret(env);
+      const authError =
+        env.READ_PUBLIC?.toLowerCase() === "true"
+          ? null
+          : await requireConfiguredWriteAuth(request, expectedSecret);
+      if (authError) {
+        return authError;
+      }
+
+      const profile = await getCurrentProfile(env);
+      return jsonResponse(profile);
+    }
+
+    if (request.method === "GET" && ["/api/v1/profile", "/api/v1/profile.json"].includes(url.pathname)) {
+      const expectedSecret = await resolveConfiguredSecret(env);
+      const authError =
+        env.READ_PUBLIC?.toLowerCase() === "true"
+          ? null
+          : await requireConfiguredWriteAuth(request, expectedSecret);
+      if (authError) {
+        return authError;
+      }
+
+      const profiles = await listProfiles(env);
+      return jsonResponse(profiles);
+    }
+
+    if (["POST", "PUT"].includes(request.method) && ["/api/v1/profile", "/api/v1/profile.json"].includes(url.pathname)) {
+      const expectedSecret = await resolveConfiguredSecret(env);
+      const debugContext = getWriteDebugContext(request, expectedSecret);
+      if (!expectedSecret) {
+        console.warn("Rejected profile write: setup incomplete", debugContext);
+        return jsonResponse(
+          { error: "Setup incomplete. Open /health once to generate the API secret." },
+          { status: 503 }
+        );
+      }
+
+      if (!(await hasValidSecret(request, expectedSecret))) {
+        console.warn("Rejected profile write: invalid secret", debugContext);
+        const authError = await requireConfiguredWriteAuth(request, expectedSecret);
+        if (authError) {
+          return authError;
+        }
+      }
+
+      try {
+        const body = (await parsePostBody(request)) as NightscoutProfileRecord;
+        const profile = await storeProfile(env, body, request.method as "POST" | "PUT");
+        console.log("Stored profile", {
+          ...debugContext,
+          defaultProfile: profile.defaultProfile,
+          profileCount: Object.keys(profile.store ?? {}).length
+        });
+        return jsonResponse(profile);
+      } catch (error) {
+        console.warn("Rejected profile write: invalid payload", {
+          ...debugContext,
+          error: error instanceof Error ? error.message : "Invalid request body."
+        });
+        return jsonResponse(
+          { error: error instanceof Error ? error.message : "Invalid request body." },
+          { status: 400 }
+        );
+      }
+    }
+
+    if (request.method === "GET" && ["/api/v1/devicestatus", "/api/v1/devicestatus.json"].includes(url.pathname)) {
       const expectedSecret = await resolveConfiguredSecret(env);
       const authError =
         env.READ_PUBLIC?.toLowerCase() === "true"
@@ -402,7 +497,7 @@ export default {
         const entries = normalizeEntries(body);
         const result = await storeEntries(env, entries);
         console.log("Stored entries", { ...debugContext, stored: result.stored, total: result.total });
-        return jsonResponse(result, { status: 201 });
+        return jsonResponse(result);
       } catch (error) {
         console.warn("Rejected entry write: invalid payload", {
           ...debugContext,

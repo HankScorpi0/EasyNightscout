@@ -4,6 +4,7 @@ import type {
   CgmEntry,
   EntriesSnapshot,
   EntryQuery,
+  NightscoutProfileRecord,
   SetupState,
   Treatment,
   TreatmentsSnapshot,
@@ -12,6 +13,7 @@ import type {
 
 const STORAGE_KEY = "entries";
 const TREATMENTS_KEY = "treatments";
+const PROFILE_KEY = "profile";
 const SETUP_KEY = "setup";
 const API_SECRET_LENGTH = 6;
 
@@ -70,6 +72,22 @@ export class EntriesDurableObject {
       });
     }
 
+    if (request.method === "GET" && url.pathname === "/profile/current") {
+      const profile = await this.getProfile();
+      return Response.json(profile ?? {});
+    }
+
+    if (request.method === "GET" && url.pathname === "/profile") {
+      const profile = await this.getProfile();
+      return Response.json(profile ? [profile] : []);
+    }
+
+    if ((request.method === "POST" || request.method === "PUT") && url.pathname === "/profile") {
+      const incoming = (await request.json()) as NightscoutProfileRecord;
+      const profile = await this.putProfile(incoming);
+      return Response.json(profile);
+    }
+
     if (request.method === "GET" && url.pathname === "/snapshot") {
       const snapshot = await this.getSnapshot();
       return Response.json(snapshot);
@@ -93,6 +111,10 @@ export class EntriesDurableObject {
 
   private async getTreatments(): Promise<Treatment[]> {
     return (await this.ctx.storage.get<Treatment[]>(TREATMENTS_KEY)) ?? [];
+  }
+
+  private async getProfile(): Promise<NightscoutProfileRecord | null> {
+    return (await this.ctx.storage.get<NightscoutProfileRecord>(PROFILE_KEY)) ?? null;
   }
 
   private async bootstrapSetupState(): Promise<SetupState> {
@@ -138,6 +160,11 @@ export class EntriesDurableObject {
     const merged = mergeTreatments(current, incoming, clampMaxEntries(this.env.MAX_ENTRIES));
     await this.ctx.storage.put(TREATMENTS_KEY, merged);
     return merged;
+  }
+
+  private async putProfile(incoming: NightscoutProfileRecord): Promise<NightscoutProfileRecord> {
+    await this.ctx.storage.put(PROFILE_KEY, incoming);
+    return incoming;
   }
 
   private async getSnapshot(): Promise<EntriesSnapshot> {
