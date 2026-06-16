@@ -1,4 +1,4 @@
-import { SELF, reset } from "cloudflare:test";
+import { SELF, env, reset } from "cloudflare:test";
 import { afterEach, describe, expect, it } from "vitest";
 
 afterEach(async () => {
@@ -302,6 +302,7 @@ describe("api", () => {
   it("renders the health page", async () => {
     const { secret, cookie } = await initializeSetup();
     await acknowledgeSetup(cookie);
+    env.HEALTH_REFRESH_SECONDS = "45";
 
     await postEntries({ sgv: 143, date: 1781111111111 }, secretHeader(secret));
     await postTreatments(
@@ -324,8 +325,12 @@ describe("api", () => {
     expect(html).toContain("Stored readings");
     expect(html).toContain("Latest treatment");
     expect(html).toContain("Correction Bolus");
-    expect(html).toContain("Insulin: 1.2 U");
+    expect(html).toContain('class="reading treatment-reading">1.2 <span>U</span>');
+    expect(html).toContain("Received:");
     expect(html).toContain("Stored treatments: 1");
+    expect(html).toContain("window.setTimeout(() =>");
+    expect(html).toContain("window.location.reload()");
+    expect(html).toContain("45000");
   });
 
   it("renders the latest treatment with insulin on the health page", async () => {
@@ -362,7 +367,8 @@ describe("api", () => {
     const html = await response.text();
     expect(html).toContain("Latest treatment");
     expect(html).toContain("Correction Bolus");
-    expect(html).toContain("Insulin: 1.2 U");
+    expect(html).toContain('class="reading treatment-reading">1.2 <span>U</span>');
+    expect(html).toContain("Received:");
     expect(html).not.toContain("Site Change");
   });
 
@@ -408,6 +414,7 @@ describe("api", () => {
     expect(html).toContain("Ultimo treatment");
     expect(html).toContain("Lecturas guardadas");
     expect(html).toContain("Treatments guardados: 1");
-    expect(html).toContain("Insulina: 1.2 U");
+    expect(html).toContain('class="reading treatment-reading">1.2 <span>U</span>');
+    expect(html).toContain("Recibido hace:");
   });
 });

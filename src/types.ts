@@ -2,6 +2,7 @@ export interface Env {
   API_SECRET?: string;
   MAX_ENTRIES?: string;
   READ_PUBLIC?: string;
+  HEALTH_REFRESH_SECONDS?: string;
   ENTRIES_DO: DurableObjectNamespace;
 }
 
@@ -96,6 +97,7 @@ export interface HealthViewModel {
   count: number;
   latestTreatment?: Treatment | null;
   treatmentCount?: number;
+  refreshSeconds?: number;
   baseUrl: string;
   setupSecret?: string | null;
   setupPending?: boolean;

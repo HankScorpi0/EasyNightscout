@@ -28,6 +28,7 @@ const APP_NAME = "TinyScout Lite";
 const APP_VERSION = "0.1.0";
 const EMPTY_COLLECTION = [];
 const API_BASE_PATHS = new Set(["/api/v1", "/api/v1/"]);
+const DEFAULT_HEALTH_REFRESH_SECONDS = 30;
 
 function getHealthLocale(pathname: string): "en" | "es" | null {
   if (pathname === "/health" || pathname === "/setup/acknowledge") {
@@ -44,6 +45,16 @@ function getHealthLocale(pathname: string): "en" | "es" | null {
 function getEntriesStub(env: Env): DurableObjectStub<EntriesDurableObject> {
   const id = env.ENTRIES_DO.idFromName("global");
   return env.ENTRIES_DO.get(id) as DurableObjectStub<EntriesDurableObject>;
+}
+
+function getHealthRefreshSeconds(env: Env): number {
+  const raw = Number.parseInt(env.HEALTH_REFRESH_SECONDS ?? "", 10);
+
+  if (!Number.isFinite(raw) || raw < 5) {
+    return DEFAULT_HEALTH_REFRESH_SECONDS;
+  }
+
+  return raw;
 }
 
 async function listEntries(env: Env, query: ReturnType<typeof parseEntryQuery>): Promise<CgmEntry[]> {
@@ -292,6 +303,7 @@ export default {
           count: snapshot.count,
           latestTreatment: treatmentsSnapshot.last,
           treatmentCount: treatmentsSnapshot.count,
+          refreshSeconds: getHealthRefreshSeconds(env),
           baseUrl: url.origin,
           setupSecret:
             setupState?.revealToken && effectiveSetupToken === setupState.revealToken

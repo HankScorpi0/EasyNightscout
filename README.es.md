@@ -170,6 +170,7 @@ Limitaciones actuales:
 - `API_SECRET`: secreto manual opcional
 - `READ_PUBLIC`: `true` en esta configuración
 - `MAX_ENTRIES`: `2000` por defecto
+- `HEALTH_REFRESH_SECONDS`: `30` por defecto, valor efectivo mínimo `5`
 
 ### Endpoints Principales
 
