@@ -9,7 +9,7 @@ Technical guide: see [README.technical.md](README.technical.md).
 
 ## In One Sentence
 
-TinyScout Lite gives you a free and simple cloud endpoint for your diabetes data.
+TinyScout Lite lets you store your glucose data in the cloud for free, simply and easily.
 
 ## Important Warning
 
