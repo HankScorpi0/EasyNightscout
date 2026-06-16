@@ -8,6 +8,9 @@ interface HealthCopy {
   minutes: (count: number) => string;
   hour: string;
   hours: (count: number) => string;
+  serviceLive: string;
+  serviceStale: string;
+  serviceWaiting: string;
   setupComplete: string;
   setupCompleteBody: string;
   useUrl: string;
@@ -45,6 +48,9 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     minutes: (count) => `${count} minutes`,
     hour: "1 hour",
     hours: (count) => `${count} hours`,
+    serviceLive: "Service active",
+    serviceStale: "Service stale",
+    serviceWaiting: "Waiting for data",
     setupComplete: "Setup complete",
     setupCompleteBody: "Save this API secret now. For security reasons it will only be shown this one time.",
     useUrl: "Use this xDrip+ URL:",
@@ -80,6 +86,9 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     minutes: (count) => `${count} minutos`,
     hour: "1 hora",
     hours: (count) => `${count} horas`,
+    serviceLive: "Servicio activo",
+    serviceStale: "Servicio sin datos recientes",
+    serviceWaiting: "Esperando datos",
     setupComplete: "Configuracion completada",
     setupCompleteBody: "Guarda este secreto API ahora. Por seguridad solo se mostrara esta unica vez.",
     useUrl: "Usa esta URL de xDrip+:",
@@ -209,6 +218,24 @@ function deltaTone(delta: number | null | undefined): string {
   return delta > 0 ? "is-up" : "is-down";
 }
 
+function getServiceState(
+  latestDate: number | undefined,
+  refreshMs: number,
+  copy: HealthCopy
+): { tone: "live" | "stale" | "waiting"; label: string } {
+  if (!latestDate) {
+    return { tone: "waiting", label: copy.serviceWaiting };
+  }
+
+  const staleAfterMs = Math.max(refreshMs * 2, 5 * 60 * 1000);
+  const ageMs = Date.now() - latestDate;
+  if (ageMs <= staleAfterMs) {
+    return { tone: "live", label: copy.serviceLive };
+  }
+
+  return { tone: "stale", label: copy.serviceStale };
+}
+
 export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "en"): string {
   const copy = COPY[locale];
   const exampleSecret = view.setupSecret ?? "YOUR_API_SECRET";
@@ -223,6 +250,7 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
   const latestDelta = formatDelta(view.latestDelta);
   const latestDeltaTone = deltaTone(view.latestDelta);
   const refreshMs = Math.max(5000, (view.refreshSeconds ?? 30) * 1000);
+  const serviceState = getServiceState(view.latest?.date, refreshMs, copy);
   const autoRefreshScript =
     view.setupSecret || view.setupPending
       ? ""
@@ -406,8 +434,23 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         height: 0.95rem;
         flex: 0 0 auto;
         border-radius: 999px;
-        background: linear-gradient(135deg, #1f8c5b, #1264c7);
-        box-shadow: 0 0 0 0.32rem rgba(18, 100, 199, 0.1);
+        border: 0;
+        padding: 0;
+        cursor: default;
+        background: linear-gradient(135deg, #7c8ea0, #5d7285);
+        box-shadow: 0 0 0 0.32rem rgba(93, 114, 133, 0.14);
+      }
+      .brand-mark-dot.is-live {
+        background: linear-gradient(135deg, #34c37a, #1f8c5b);
+        box-shadow: 0 0 0 0.32rem rgba(31, 140, 91, 0.16);
+      }
+      .brand-mark-dot.is-stale {
+        background: linear-gradient(135deg, #f3b546, #d97706);
+        box-shadow: 0 0 0 0.32rem rgba(217, 119, 6, 0.14);
+      }
+      .brand-mark-dot.is-waiting {
+        background: linear-gradient(135deg, #38a8ff, #1264c7);
+        box-shadow: 0 0 0 0.32rem rgba(18, 100, 199, 0.14);
       }
       .brand-mark {
         margin: 0;
@@ -798,7 +841,12 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
     <main>
       <div class="brand-bar">
         <div class="brand-lockup">
-          <span class="brand-mark-dot" aria-hidden="true"></span>
+          <span
+            class="brand-mark-dot is-${serviceState.tone}"
+            role="img"
+            aria-label="${serviceState.label}"
+            title="${serviceState.label}"
+          ></span>
           <p class="brand-mark">TinyScout <span>Lite</span> <small>CGM</small></p>
         </div>
       </div>
