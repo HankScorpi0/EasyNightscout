@@ -119,6 +119,18 @@ async function storeTreatments(env: Env, treatments: Treatment[]): Promise<{ sto
   return (await response.json()) as { stored: number; total: number };
 }
 
+async function deleteTreatment(
+  env: Env,
+  treatmentId: string
+): Promise<{ status: "ok"; deleted: boolean; _id: string }> {
+  const stub = getEntriesStub(env);
+  const response = await stub.fetch(`https://entries.internal/treatments/${encodeURIComponent(treatmentId)}`, {
+    method: "DELETE"
+  });
+
+  return (await response.json()) as { status: "ok"; deleted: boolean; _id: string };
+}
+
 async function storeProfile(env: Env, profile: NightscoutProfileRecord, method: "POST" | "PUT"): Promise<NightscoutProfileRecord> {
   const stub = getEntriesStub(env);
   const response = await stub.fetch("https://entries.internal/profile", {
@@ -406,6 +418,38 @@ export default {
       const query = parseTreatmentQuery(url);
       const treatments = await listTreatments(env, query);
       return jsonResponse(treatments);
+    }
+
+    if (
+      request.method === "DELETE" &&
+      (/^\/api\/v1\/treatments\/.+$/.test(url.pathname) || /^\/api\/v1\/treatments\/.+\.json$/.test(url.pathname))
+    ) {
+      const expectedSecret = await resolveConfiguredSecret(env);
+      const debugContext = getWriteDebugContext(request, expectedSecret);
+      if (!expectedSecret) {
+        console.warn("Rejected treatment delete: setup incomplete", debugContext);
+        return jsonResponse(
+          { error: "Setup incomplete. Open /health once to generate the API secret." },
+          { status: 503 }
+        );
+      }
+
+      if (!(await hasValidSecret(request, expectedSecret))) {
+        console.warn("Rejected treatment delete: invalid secret", debugContext);
+        const authError = await requireConfiguredWriteAuth(request, expectedSecret);
+        if (authError) {
+          return authError;
+        }
+      }
+
+      const treatmentId = decodeURIComponent(
+        url.pathname
+          .replace(/^\/api\/v1\/treatments\//, "")
+          .replace(/\.json$/, "")
+      );
+      const result = await deleteTreatment(env, treatmentId);
+      console.log("Processed treatment delete", { ...debugContext, treatmentId, deleted: result.deleted });
+      return jsonResponse(result);
     }
 
     if (request.method === "GET" && ["/api/v1/profile/current", "/api/v1/profile/current.json"].includes(url.pathname)) {

@@ -72,6 +72,12 @@ export class EntriesDurableObject {
       });
     }
 
+    if (request.method === "DELETE" && url.pathname.startsWith("/treatments/")) {
+      const treatmentId = decodeURIComponent(url.pathname.slice("/treatments/".length));
+      const result = await this.deleteTreatment(treatmentId);
+      return Response.json(result);
+    }
+
     if (request.method === "GET" && url.pathname === "/profile/current") {
       const profile = await this.getProfile();
       return Response.json(profile ?? {});
@@ -160,6 +166,26 @@ export class EntriesDurableObject {
     const merged = mergeTreatments(current, incoming, clampMaxEntries(this.env.MAX_ENTRIES));
     await this.ctx.storage.put(TREATMENTS_KEY, merged);
     return merged;
+  }
+
+  private async deleteTreatment(treatmentId: string): Promise<{ status: "ok"; deleted: boolean; _id: string }> {
+    const current = await this.getTreatments();
+    const remaining = current.filter(
+      (treatment) =>
+        ![
+          treatment._id,
+          typeof treatment.identifier === "string" ? treatment.identifier : null,
+          typeof treatment.uuid === "string" ? treatment.uuid : null,
+          typeof treatment.syncIdentifier === "string" ? treatment.syncIdentifier : null
+        ].includes(treatmentId)
+    );
+
+    if (remaining.length !== current.length) {
+      await this.ctx.storage.put(TREATMENTS_KEY, remaining);
+      return { status: "ok", deleted: true, _id: treatmentId };
+    }
+
+    return { status: "ok", deleted: false, _id: treatmentId };
   }
 
   private async putProfile(incoming: NightscoutProfileRecord): Promise<NightscoutProfileRecord> {

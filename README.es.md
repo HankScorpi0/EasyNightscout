@@ -4,6 +4,8 @@ TinyScout Lite es una versión muy reducida de Nightscout que puedes desplegar g
 
 Su idea es muy simple: recibir tus datos y hacerlos disponibles para cualquier app compatible con Nightscout, sin tener que montar una instalación completa.
 
+TinyScout Lite es código abierto. Repositorio: [HankScorpi0/TinyScout-Lite](https://github.com/HankScorpi0/TinyScout-Lite).
+
 Version in English: see [README.md](README.md).
 
 ## En Una Frase
@@ -164,7 +166,7 @@ El soporte actual de perfiles incluye:
 Limitaciones actuales:
 
 - no es Nightscout completo
-- no implementa rutas de borrado para `treatments`
+- el borrado de `treatments` es minimo y solo busca compatibilidad con clientes
 - no guarda historial completo de perfiles
 
 ## Referencia Técnica
@@ -184,6 +186,7 @@ Limitaciones actuales:
 - `GET /api/v1/status.json`
 - `POST /api/v1/treatments`
 - `GET /api/v1/treatments`
+- `DELETE /api/v1/treatments/:id`
 - `GET /api/v1/profile/current`
 - `GET /api/v1/profile`
 - `POST /api/v1/profile`

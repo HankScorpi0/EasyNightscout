@@ -62,6 +62,13 @@ async function postTreatments(body: unknown, headers: HeadersInit) {
   });
 }
 
+async function deleteTreatment(id: string, headers: HeadersInit) {
+  return SELF.fetch(`https://example.com/api/v1/treatments/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    headers
+  });
+}
+
 async function postProfile(body: unknown, headers: HeadersInit, method: "POST" | "PUT" = "POST") {
   return SELF.fetch("https://example.com/api/v1/profile", {
     method,
@@ -214,6 +221,37 @@ describe("api", () => {
     expect(treatments).toHaveLength(1);
     expect(treatments[0].eventType).toBe("Correction Bolus");
     expect(treatments[0].mills).toBe(1781121900000);
+  });
+
+  it("supports idempotent treatment deletes for tconnectsync", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
+    const treatmentId = "1781556330000:Sleep:Pump (tconnectsync):Sleep (Scheduled) - Not Ended";
+
+    await postTreatments({
+      _id: treatmentId,
+      eventType: "Sleep",
+      created_at: "2026-06-15T20:45:30.000Z",
+      enteredBy: "Pump (tconnectsync)",
+      notes: "Sleep (Scheduled) - Not Ended"
+    }, secretHeader(secret));
+
+    const firstDelete = await deleteTreatment(treatmentId, secretHeader(secret));
+    expect(firstDelete.status).toBe(200);
+    expect(await firstDelete.json()).toEqual({
+      status: "ok",
+      deleted: true,
+      _id: treatmentId
+    });
+
+    const secondDelete = await deleteTreatment(treatmentId, secretHeader(secret));
+    expect(secondDelete.status).toBe(200);
+    expect(await secondDelete.json()).toEqual({
+      status: "ok",
+      deleted: false,
+      _id: treatmentId
+    });
   });
 
   it("returns status and compatibility endpoints", async () => {

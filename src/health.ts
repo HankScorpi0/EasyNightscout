@@ -33,6 +33,8 @@ interface HealthCopy {
   storedReadings: string;
   storedTreatments: string;
   viewStatusJson: string;
+  openSource: string;
+  viewRepository: string;
 }
 
 const COPY: Record<HealthLocale, HealthCopy> = {
@@ -66,7 +68,9 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     status: "Status",
     storedReadings: "Stored readings",
     storedTreatments: "Stored treatments",
-    viewStatusJson: "View status JSON"
+    viewStatusJson: "View status JSON",
+    openSource: "Open source project",
+    viewRepository: "View repository"
   },
   es: {
     lessThanOneMinute: "menos de 1 minuto",
@@ -98,7 +102,9 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     status: "Estado",
     storedReadings: "Lecturas guardadas",
     storedTreatments: "Treatments guardados",
-    viewStatusJson: "Ver status JSON"
+    viewStatusJson: "Ver status JSON",
+    openSource: "Proyecto de codigo abierto",
+    viewRepository: "Ver repositorio"
   }
 };
 
@@ -510,6 +516,9 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
       }
       .status-actions {
         margin-top: 0.9rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
       }
       .status-link {
         display: inline-flex;
@@ -521,6 +530,12 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         color: var(--blue);
         font-weight: 800;
         text-decoration: none;
+      }
+      .repo-note {
+        margin-top: 1rem;
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
       }
       .reading-panel {
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(238, 247, 255, 0.95));
@@ -781,7 +796,9 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         </div>
         <div class="status-actions">
           <a class="status-link" href="/api/v1/status.json">${copy.viewStatusJson}</a>
+          <a class="status-link" href="https://github.com/HankScorpi0/TinyScout-Lite" target="_blank" rel="noopener noreferrer">${copy.viewRepository}</a>
         </div>
+        <p class="repo-note">${copy.openSource}</p>
       </section>
     </main>
     ${autoRefreshScript}
