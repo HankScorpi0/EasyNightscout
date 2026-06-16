@@ -246,10 +246,11 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
           <h2>${copy.latestReading}</h2>
         </div>
         <div class="reading-row">
-          <p class="reading ${latestGlucoseTone}">${view.latest.sgv} <span>mg/dL</span></p>
+          <div class="reading-value-group">
+            <p class="reading ${latestGlucoseTone}">${view.latest.sgv} <span>mg/dL</span> <span class="direction-arrow ${latestDirectionTone}">${latestDirection}</span></p>
+          </div>
           <div class="pill-stack">
-            <p class="pill">${copy.receivedAgo}: ${latestAge}</p>
-            <p class="pill">${copy.direction}: <span class="direction-arrow ${latestDirectionTone}">${latestDirection}</span></p>
+            <p class="reading-meta">${copy.receivedAgo}: ${latestAge}</p>
           </div>
         </div>
       </section>
@@ -481,11 +482,24 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         gap: 1rem;
         flex-wrap: wrap;
       }
+      .reading-value-group {
+        display: flex;
+        align-items: end;
+        gap: 0.9rem;
+        flex-wrap: wrap;
+      }
       .pill-stack {
         display: flex;
         flex-wrap: wrap;
         gap: 0.7rem;
         justify-content: flex-end;
+      }
+      .reading-meta {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.5;
       }
       .pill {
         margin: 0;
@@ -499,8 +513,10 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         display: inline-block;
         min-width: 1.2em;
         text-align: center;
-        font-size: 1.1em;
+        font-size: 1em;
         font-weight: 900;
+        line-height: 1;
+        vertical-align: baseline;
       }
       .direction-arrow.is-up {
         color: #d97706;
