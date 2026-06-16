@@ -1,16 +1,15 @@
 # TinyScout Lite
 
-TinyScout Lite es una versión muy reducida de Nightscout que puedes desplegar gratis en la nube con Cloudflare.
+TinyScout Lite es un servicio muy pequeño compatible con Nightscout que puedes desplegar gratis en Cloudflare.
 
-Su idea es muy simple: recibir tus datos y hacerlos disponibles para cualquier app compatible con Nightscout, sin tener que montar una instalación completa.
+Su objetivo es simple: recibir los datos de glucosa desde `xDrip+` y hacerlos disponibles para apps que ya saben hablar con Nightscout.
 
-Se publica bajo la licencia MIT, que permite a cualquiera usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar e incluso vender el software, siempre que se conserve el aviso de copyright y el texto de la licencia.
-
-Version in English: see [README.md](README.md).
+Version in English: see [README.md](README.md).  
+Guía técnica: ver [README.technical.es.md](README.technical.es.md).
 
 ## En Una Frase
 
-TinyScout Lite te da una forma gratuita y sencilla de tener un servicio compatible con Nightscout en la nube.
+TinyScout Lite te da un endpoint gratuito y sencillo en la nube para tus datos de diabetes.
 
 ## Advertencia Importante
 
@@ -25,35 +24,23 @@ Este proyecto es para ti si:
 - ya usas `xDrip+`
 - quieres un despliegue gratis en la nube
 - quieres un respaldo sencillo si tu proveedor principal falla
-- prefieres usar apps compatibles con Nightscout como `Zukkah`
+- usas apps compatibles con Nightscout como `Zukkah`
 - no quieres mantener una instalación completa de Nightscout
 
 ## Qué Hace
 
 - Recibe lecturas de glucosa desde `xDrip+`
+- Guarda lecturas recientes y tratamientos
 - Funciona con apps compatibles con Nightscout
-- Guarda lecturas recientes
-- Guarda `treatments`
 - Muestra una página simple de estado en el navegador
-- Ofrece endpoints básicos compatibles con Nightscout
-
-## Cuándo Tiene Sentido Usarlo
-
-- Como servicio secundario si tu proveedor oficial falla
-- Como alternativa sencilla si solo quieres alimentar apps compatibles con Nightscout
-- Si te gustan apps no oficiales como `Zukkah` que muestran datos que para ti son importantes, por ejemplo la diferencia entre la glucosa actual y la anterior
-- Si quieres algo muy pequeño, gratuito y fácil de desplegar
 
 ## Qué No Hace
 
 - No es Nightscout completo
-- No es tu sistema principal
-- No incluye todas las funciones de Nightscout
-- No ofrece una aplicación web completa con gráficas, informes o análisis avanzados
+- No es tu sistema médico principal
+- No incluye gráficas, informes ni análisis avanzados
 
-## Si Quieres Gráficas Y Reportes
-
-Si buscas una web completa con gráficas, reportes y más herramientas de análisis, lo recomendable es usar Nightscout.
+Si quieres una web completa con gráficas y reportes, Nightscout completo encaja mejor.
 
 ## Despliegue Gratis Más Rápido
 
@@ -69,11 +56,7 @@ La forma más fácil es usar el flujo oficial de Cloudflare:
 2. Sigue las pantallas de Cloudflare hasta que termine el despliegue.
 3. Abre la URL que te da Cloudflare, por ejemplo `https://tu-worker.workers.dev/health`.
 
-En la primera visita, TinyScout Lite crea automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez. Guárdalo en ese momento. Lo necesitarás en `xDrip+`.
-
-## Compatibilidad
-
-TinyScout Lite está pensado para funcionar con aplicaciones que ya soportan Nightscout.
+En la primera visita, TinyScout Lite crea automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez. Guárdalo en ese momento, porque lo necesitarás en `xDrip+`.
 
 ## Configurar xDrip+
 
@@ -140,68 +123,12 @@ https://tu-worker.workers.dev/api/v1/status.json
 ### Has Olvidado El Secreto
 
 - La solución más sencilla suele ser desplegar de nuevo y guardar bien el nuevo secreto
-- Los usuarios avanzados pueden cambiarlo manualmente con Wrangler secrets
+- Los usuarios avanzados pueden cambiarlo manualmente; ver [README.technical.es.md](README.technical.es.md)
 
 ### La Página Abre Pero Los Datos Son Antiguos
 
 - Revisa la hora y la zona horaria del teléfono
 - TinyScout Lite solo conserva las lecturas más recientes
-
-## Notas Avanzadas
-
-TinyScout Lite también soporta:
-
-- `entries`
-- `treatments`
-- soporte mínimo de `profile`
-- `devicestatus` como colección vacía por compatibilidad
-
-El soporte actual de perfiles incluye:
-
-- `GET /api/v1/profile/current`
-- `GET /api/v1/profile`
-- `POST /api/v1/profile`
-- `PUT /api/v1/profile`
-
-Limitaciones actuales:
-
-- no es Nightscout completo
-- el borrado de `treatments` es minimo y solo busca compatibilidad con clientes
-- no guarda historial completo de perfiles
-
-## Referencia Técnica
-
-### Variables De Entorno
-
-- `API_SECRET`: secreto manual opcional
-- `READ_PUBLIC`: `true` en esta configuración
-- `MAX_ENTRIES`: `2000` por defecto
-- `HEALTH_REFRESH_SECONDS`: `30` por defecto, valor efectivo mínimo `5`
-
-### Endpoints Principales
-
-- `POST /api/v1/entries`
-- `GET /api/v1/entries`
-- `GET /api/v1/entries/current`
-- `GET /api/v1/status.json`
-- `POST /api/v1/treatments`
-- `GET /api/v1/treatments`
-- `DELETE /api/v1/treatments/:id`
-- `GET /api/v1/profile/current`
-- `GET /api/v1/profile`
-- `POST /api/v1/profile`
-- `PUT /api/v1/profile`
-- `GET /api/v1/devicestatus`
-- `GET /health`
-- `GET /es/health`
-
-## Desarrollo Local
-
-```bash
-npm install
-npm run test
-npm run dev
-```
 
 ## Licencia
 

@@ -1,16 +1,15 @@
 # TinyScout Lite
 
-TinyScout Lite is a very reduced version of Nightscout that you can deploy for free in the cloud with Cloudflare.
+TinyScout Lite is a very small Nightscout-compatible service that you can deploy for free on Cloudflare.
 
-Its goal is simple: receive your data and make it available to any Nightscout-compatible app without running a full Nightscout setup.
+Its purpose is simple: receive glucose data from `xDrip+` and make it available to apps that already know how to talk to Nightscout.
 
-It is released under the MIT License, which allows anyone to use, copy, modify, merge, publish, distribute, sublicense, and even sell the software, as long as the copyright notice and license text are kept.
-
-Spanish version: see [README.es.md](README.es.md).
+Spanish version: see [README.es.md](README.es.md).  
+Technical guide: see [README.technical.md](README.technical.md).
 
 ## In One Sentence
 
-TinyScout Lite gives you a free and simple way to run a Nightscout-compatible service in the cloud.
+TinyScout Lite gives you a free and simple cloud endpoint for your diabetes data.
 
 ## Important Warning
 
@@ -25,39 +24,27 @@ This project is for you if:
 - you already use `xDrip+`
 - you want a free cloud deployment
 - you want a simple backup if your main provider fails
-- you prefer using Nightscout-compatible apps such as `Zukkah`
-- you do not want to manage a full Nightscout installation
+- you use Nightscout-compatible apps such as `Zukkah`
+- you do not want to maintain a full Nightscout installation
 
 ## What It Does
 
 - Receives glucose readings from `xDrip+`
+- Stores recent readings and treatments
 - Works with Nightscout-compatible apps
-- Stores recent readings
-- Stores `treatments`
-- Shows a simple status page in the browser
-- Offers basic Nightscout-compatible endpoints
-
-## When It Makes Sense
-
-- As a secondary service if your official provider fails
-- As a simple alternative if you mainly want to feed Nightscout-compatible apps
-- If you like unofficial apps such as `Zukkah` that may show data you care about, for example the difference between the current and previous glucose reading
-- If you want something very small, free, and easy to deploy
+- Shows a simple health page in the browser
 
 ## What It Does Not Do
 
 - It is not full Nightscout
-- It is not your primary system
-- It does not include every Nightscout feature
-- It does not provide a full web app with charts, reports, or advanced analysis
+- It is not your primary medical system
+- It does not include charts, reports, or advanced analysis
 
-## If You Want Charts And Reports
-
-If you want a full web app with charts, reports, and richer analysis tools, Nightscout is the better choice.
+If you want a complete web app with charts and reports, full Nightscout is a better fit.
 
 ## Fastest Free Deployment
 
-The easiest way is the official Cloudflare flow:
+The easiest option is the official Cloudflare flow:
 
 <a href="https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite" target="_blank" rel="noopener noreferrer">
   <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" />
@@ -69,11 +56,7 @@ The easiest way is the official Cloudflare flow:
 2. Follow the Cloudflare screens until the deployment finishes.
 3. Open the URL Cloudflare gives you, for example `https://your-worker.workers.dev/health`.
 
-On the first visit, TinyScout Lite creates a 6-character `API_SECRET` automatically and shows it once. Save it immediately. You will need it in `xDrip+`.
-
-## Compatibility
-
-TinyScout Lite is designed to work with apps that already support Nightscout.
+On the first visit, TinyScout Lite creates a 6-character `API_SECRET` automatically and shows it once. Save it immediately, because you will need it in `xDrip+`.
 
 ## Configure xDrip+
 
@@ -140,68 +123,12 @@ https://your-worker.workers.dev/api/v1/status.json
 ### You Forgot The Secret
 
 - The easiest fix is usually to deploy again and save the new secret carefully
-- Advanced users can replace it manually with Wrangler secrets
+- Advanced users can replace it manually; see [README.technical.md](README.technical.md)
 
 ### The Page Opens But Data Is Old
 
 - Check the phone time and timezone
 - TinyScout Lite only keeps the most recent entries
-
-## Advanced Notes
-
-TinyScout Lite also supports:
-
-- `entries`
-- `treatments`
-- minimal `profile` support
-- `devicestatus` as an empty collection for compatibility
-
-Current profile support includes:
-
-- `GET /api/v1/profile/current`
-- `GET /api/v1/profile`
-- `POST /api/v1/profile`
-- `PUT /api/v1/profile`
-
-Current limitations:
-
-- it is not full Nightscout
-- `treatments` delete support is minimal and only intended for client compatibility
-- it does not keep full profile history
-
-## Technical Reference
-
-### Environment Variables
-
-- `API_SECRET`: optional manual secret override
-- `READ_PUBLIC`: `true` in this configuration
-- `MAX_ENTRIES`: `2000` by default
-- `HEALTH_REFRESH_SECONDS`: `30` by default, minimum effective value `5`
-
-### Main Endpoints
-
-- `POST /api/v1/entries`
-- `GET /api/v1/entries`
-- `GET /api/v1/entries/current`
-- `GET /api/v1/status.json`
-- `POST /api/v1/treatments`
-- `GET /api/v1/treatments`
-- `DELETE /api/v1/treatments/:id`
-- `GET /api/v1/profile/current`
-- `GET /api/v1/profile`
-- `POST /api/v1/profile`
-- `PUT /api/v1/profile`
-- `GET /api/v1/devicestatus`
-- `GET /health`
-- `GET /es/health`
-
-## Local Development
-
-```bash
-npm install
-npm run test
-npm run dev
-```
 
 ## License
 

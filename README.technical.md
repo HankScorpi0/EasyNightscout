@@ -1,0 +1,74 @@
+# TinyScout Lite Technical Guide
+
+This document is for developers and advanced users.  
+If you only want to deploy and configure `xDrip+`, see [README.md](README.md).
+
+Spanish version: see [README.technical.es.md](README.technical.es.md).
+
+## Scope
+
+TinyScout Lite is a reduced Nightscout-compatible service designed to:
+
+- accept `entries`
+- accept `treatments`
+- provide minimal `profile` compatibility
+- expose a health/status page
+- keep the deployment very small and simple
+
+Current limitations:
+
+- it is not full Nightscout
+- `treatments` delete support is minimal and mainly for client compatibility
+- it does not keep full profile history
+- `devicestatus` is exposed as an empty collection for compatibility
+
+## Environment Variables
+
+- `API_SECRET`: optional manual secret override
+- `READ_PUBLIC`: `true` in this configuration
+- `MAX_ENTRIES`: `2000` by default
+- `HEALTH_REFRESH_SECONDS`: `30` by default, minimum effective value `5`
+
+## Main Endpoints
+
+- `POST /api/v1/entries`
+- `GET /api/v1/entries`
+- `GET /api/v1/entries/current`
+- `GET /api/v1/status.json`
+- `POST /api/v1/treatments`
+- `GET /api/v1/treatments`
+- `DELETE /api/v1/treatments/:id`
+- `GET /api/v1/profile/current`
+- `GET /api/v1/profile`
+- `POST /api/v1/profile`
+- `PUT /api/v1/profile`
+- `GET /api/v1/devicestatus`
+- `GET /health`
+- `GET /es/health`
+
+## Profile Support
+
+Current profile support includes:
+
+- `GET /api/v1/profile/current`
+- `GET /api/v1/profile`
+- `POST /api/v1/profile`
+- `PUT /api/v1/profile`
+
+## Secret Management
+
+On first visit, TinyScout Lite can generate a 6-character `API_SECRET` automatically and show it once.
+
+If you need to manage the secret manually, set `API_SECRET` yourself in the Cloudflare Worker configuration.
+
+## Local Development
+
+```bash
+npm install
+npm run test
+npm run dev
+```
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
