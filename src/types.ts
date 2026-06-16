@@ -42,6 +42,7 @@ export interface EntryQuery {
 export interface EntriesSnapshot {
   count: number;
   last: CgmEntry | null;
+  previous: CgmEntry | null;
 }
 
 export interface TreatmentsSnapshot {
@@ -94,6 +95,7 @@ export interface StatusPayload {
 
 export interface HealthViewModel {
   latest: CgmEntry | null;
+  latestDelta?: number | null;
   count: number;
   latestTreatment?: Treatment | null;
   treatmentCount?: number;

@@ -300,6 +300,10 @@ export default {
       return htmlResponse(
         renderHealthPage({
           latest: snapshot.last,
+          latestDelta:
+            snapshot.last && snapshot.previous
+              ? snapshot.last.sgv - snapshot.previous.sgv
+              : null,
           count: snapshot.count,
           latestTreatment: treatmentsSnapshot.last,
           treatmentCount: treatmentsSnapshot.count,

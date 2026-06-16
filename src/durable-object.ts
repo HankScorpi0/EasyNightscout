@@ -171,7 +171,8 @@ export class EntriesDurableObject {
     const entries = await this.getEntries();
     return {
       count: entries.length,
-      last: entries[0] ?? null
+      last: entries[0] ?? null,
+      previous: entries[1] ?? null
     };
   }
 

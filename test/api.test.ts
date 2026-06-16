@@ -234,6 +234,24 @@ describe("api", () => {
     expect(await treatmentsResponse.json()).toEqual([]);
   });
 
+  it("shows the delta between the latest reading and the previous one on health", async () => {
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
+    await postEntries([
+      { sgv: 145, date: 1781111113200, direction: "Flat", type: "sgv" },
+      { sgv: 138, date: 1781111113100, direction: "Flat", type: "sgv" }
+    ], secretHeader(secret));
+
+    const response = await SELF.fetch("https://example.com/health", {
+      headers: secretHeader(secret)
+    });
+
+    expect(response.status).toBe(200);
+    const html = await response.text();
+    expect(html).toContain('class="reading-delta is-up">+7<');
+  });
+
   it("supports Nightscout profile current and profile writes for tconnectsync", async () => {
     const { secret, cookie } = await initializeSetup();
     await acknowledgeSetup(cookie);

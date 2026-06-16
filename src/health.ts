@@ -187,6 +187,22 @@ function glucoseTone(sgv?: number): string {
   return "is-range";
 }
 
+function formatDelta(delta: number | null | undefined): string | null {
+  if (typeof delta !== "number" || !Number.isFinite(delta)) {
+    return null;
+  }
+
+  return `${delta > 0 ? "+" : ""}${delta}`;
+}
+
+function deltaTone(delta: number | null | undefined): string {
+  if (typeof delta !== "number" || !Number.isFinite(delta) || delta === 0) {
+    return "is-neutral";
+  }
+
+  return delta > 0 ? "is-up" : "is-down";
+}
+
 export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "en"): string {
   const copy = COPY[locale];
   const exampleSecret = view.setupSecret ?? "YOUR_API_SECRET";
@@ -198,6 +214,8 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
   const latestDirection = directionToArrow(view.latest?.direction, copy.noData);
   const latestDirectionTone = directionTone(view.latest?.direction);
   const latestGlucoseTone = glucoseTone(view.latest?.sgv);
+  const latestDelta = formatDelta(view.latestDelta);
+  const latestDeltaTone = deltaTone(view.latestDelta);
   const refreshMs = Math.max(5000, (view.refreshSeconds ?? 30) * 1000);
   const autoRefreshScript =
     view.setupSecret || view.setupPending
@@ -248,6 +266,7 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         <div class="reading-row">
           <div class="reading-value-group">
             <p class="reading ${latestGlucoseTone}">${view.latest.sgv} <span>mg/dL</span> <span class="direction-arrow ${latestDirectionTone}">${latestDirection}</span></p>
+            ${latestDelta ? `<p class="reading-delta ${latestDeltaTone}">${latestDelta}</p>` : ""}
           </div>
           <div class="pill-stack">
             <p class="reading-meta">${copy.receivedAgo}: ${latestAge}</p>
@@ -493,6 +512,28 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         flex-wrap: wrap;
         gap: 0.7rem;
         justify-content: flex-end;
+      }
+      .reading-delta {
+        margin: 0 0 0.45rem;
+        padding: 0.45rem 0.8rem;
+        border-radius: 999px;
+        background: rgba(25, 48, 70, 0.08);
+        color: var(--text);
+        font-size: 1.05rem;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .reading-delta.is-up {
+        background: rgba(217, 119, 6, 0.12);
+        color: #b45309;
+      }
+      .reading-delta.is-down {
+        background: rgba(37, 99, 235, 0.12);
+        color: #1d4ed8;
+      }
+      .reading-delta.is-neutral {
+        background: rgba(25, 48, 70, 0.08);
+        color: var(--muted);
       }
       .reading-meta {
         margin: 0;
