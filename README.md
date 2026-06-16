@@ -105,6 +105,10 @@ Spanish page:
 https://your-worker.workers.dev/es/health
 ```
 
+English `health` page example:
+
+![English health page example](docs/images/health-en.png)
+
 You should see:
 
 - the latest glucose reading

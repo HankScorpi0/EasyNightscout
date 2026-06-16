@@ -105,6 +105,10 @@ Página en español:
 https://tu-worker.workers.dev/es/health
 ```
 
+Ejemplo de la pantalla `health` en español:
+
+![Pantalla health en español](docs/images/health-es.png)
+
 Deberías ver:
 
 - la última lectura de glucosa
