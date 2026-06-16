@@ -4,8 +4,6 @@ TinyScout Lite es una versión muy reducida de Nightscout que puedes desplegar g
 
 Su idea es muy simple: recibir tus datos y hacerlos disponibles para cualquier app compatible con Nightscout, sin tener que montar una instalación completa.
 
-TinyScout Lite es código abierto. Repositorio: [HankScorpi0/TinyScout-Lite](https://github.com/HankScorpi0/TinyScout-Lite).
-
 Se publica bajo la licencia MIT, que permite a cualquiera usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar e incluso vender el software, siempre que se conserve el aviso de copyright y el texto de la licencia.
 
 Version in English: see [README.md](README.md).
