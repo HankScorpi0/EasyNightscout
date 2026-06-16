@@ -29,7 +29,6 @@ interface HealthCopy {
   noTreatments: string;
   noTreatmentsBody: string;
   title: string;
-  subtitle: string;
   status: string;
   storedReadings: string;
   storedTreatments: string;
@@ -63,8 +62,7 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     noNotes: "No notes",
     noTreatments: "No treatments received yet.",
     noTreatmentsBody: "TinyScout Lite will show the most recent Nightscout-compatible treatment here.",
-    title: "TinyScout Lite is running",
-    subtitle: "Secondary/recovery server for Nightscout-compatible CGM readings.",
+    title: "TinyScout Lite",
     status: "Status",
     storedReadings: "Stored readings",
     storedTreatments: "Stored treatments",
@@ -96,8 +94,7 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     noNotes: "Sin notas",
     noTreatments: "Todavia no se han recibido treatments.",
     noTreatmentsBody: "TinyScout Lite mostrara aqui el treatment compatible con Nightscout mas reciente.",
-    title: "TinyScout Lite esta funcionando",
-    subtitle: "Servidor secundario o de recuperacion para lecturas CGM compatibles con Nightscout.",
+    title: "TinyScout Lite",
     status: "Estado",
     storedReadings: "Lecturas guardadas",
     storedTreatments: "Treatments guardados",
@@ -368,9 +365,9 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         margin-top: 0;
       }
       h1 {
-        margin-bottom: 0.6rem;
-        font-size: clamp(2.2rem, 4vw, 3.3rem);
-        line-height: 1;
+        margin-bottom: 0.35rem;
+        font-size: clamp(1.7rem, 3vw, 2.3rem);
+        line-height: 1.05;
         letter-spacing: -0.04em;
       }
       h2 {
@@ -378,49 +375,61 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         font-size: 1.25rem;
         letter-spacing: -0.02em;
       }
-      .hero {
-        position: relative;
-        overflow: hidden;
-        padding: 2rem;
-        border-radius: 24px;
-        background:
-          linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(241, 249, 255, 0.88)),
-          linear-gradient(135deg, #ffffff, #eef7ff);
-        border: 1px solid rgba(18, 100, 199, 0.1);
-      }
-      .hero::after {
-        content: "";
-        position: absolute;
-        inset: auto -3rem -3rem auto;
-        width: 12rem;
-        height: 12rem;
-        border-radius: 999px;
-        background: radial-gradient(circle, rgba(243, 181, 70, 0.28), transparent 65%);
-        pointer-events: none;
-      }
-      .hero-top {
+      .brand-bar {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
+        justify-content: flex-start;
         margin-bottom: 1rem;
+        padding: 0.25rem 0 0;
       }
-      .hero-copy {
-        max-width: 38rem;
-        margin-bottom: 1.4rem;
+      .brand-lockup {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.9rem 1.1rem;
+        border-radius: 18px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(234, 244, 255, 0.9));
+        border: 1px solid rgba(18, 100, 199, 0.1);
+        box-shadow: 0 12px 28px rgba(18, 100, 199, 0.08);
+      }
+      .brand-mark-dot {
+        width: 0.95rem;
+        height: 0.95rem;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #1f8c5b, #1264c7);
+        box-shadow: 0 0 0 0.32rem rgba(18, 100, 199, 0.1);
+      }
+      .brand-mark {
+        margin: 0;
+        color: var(--text);
+        font-size: 1.15rem;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+      .brand-mark span {
+        color: var(--blue);
+      }
+      .brand-mark small {
         color: var(--muted);
-        font-size: 1.02rem;
-        line-height: 1.6;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        margin-left: 0.55rem;
+        text-transform: uppercase;
       }
       .status-badge {
         display: inline-flex;
         align-items: center;
         gap: 0.55rem;
-        padding: 0.8rem 1rem;
+        padding: 0.55rem 0.8rem;
         border-radius: 999px;
-        background: var(--green-soft);
+        background: rgba(31, 140, 91, 0.08);
         color: var(--green);
+        font-size: 0.88rem;
         font-weight: 800;
+        line-height: 1;
         white-space: nowrap;
       }
       .status-badge::before {
@@ -442,6 +451,81 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         background: var(--panel);
         border: 1px solid var(--line);
         box-shadow: 0 10px 30px rgba(25, 48, 70, 0.05);
+      }
+      .status-panel {
+        margin-top: 1rem;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.76), rgba(246, 250, 252, 0.9));
+        border-color: rgba(18, 100, 199, 0.12);
+      }
+      .status-panel-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.9rem;
+        margin-bottom: 1rem;
+      }
+      .status-heading {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .status-title-row {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        flex-wrap: wrap;
+      }
+      .system-name {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      .status-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+        margin-top: 0.2rem;
+      }
+      .status-card {
+        padding: 1rem;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(18, 100, 199, 0.08);
+      }
+      .status-label {
+        margin: 0 0 0.35rem;
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .status-value {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        color: var(--text);
+      }
+      .status-actions {
+        margin-top: 0.9rem;
+      }
+      .status-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.75rem 0.95rem;
+        border-radius: 999px;
+        background: var(--blue-soft);
+        color: var(--blue);
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .reading-panel {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(238, 247, 255, 0.95));
+        border-color: rgba(18, 100, 199, 0.12);
+        box-shadow: 0 18px 40px rgba(18, 100, 199, 0.08);
       }
       .panel-header {
         margin-bottom: 0.9rem;
@@ -650,12 +734,11 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
           padding: 1rem;
           border-radius: 24px;
         }
-        .hero {
-          padding: 1.4rem;
-        }
-        .hero-top {
+        .status-panel-top {
           align-items: flex-start;
-          flex-direction: column;
+        }
+        .status-grid {
+          grid-template-columns: 1fr;
         }
         .detail-grid {
           grid-template-columns: 1fr;
@@ -665,28 +748,40 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
   </head>
   <body>
     <main>
-      <section class="hero">
-        <div class="hero-top">
-          <div>
-            <h1>${copy.title} <span class="ok">OK</span></h1>
-            <p class="hero-copy">${copy.subtitle}</p>
-          </div>
-          <div class="status-badge">${copy.status}</div>
+      <div class="brand-bar">
+        <div class="brand-lockup">
+          <span class="brand-mark-dot" aria-hidden="true"></span>
+          <p class="brand-mark">TinyScout <span>Lite</span> <small>CGM</small></p>
         </div>
-      </section>
+      </div>
       <div class="layout">
         ${setupBlock}
         ${latestBlock}
         ${latestTreatmentBlock}
       </div>
       <section class="panel status-panel">
-        <div class="panel-header">
-          <p class="eyebrow">System</p>
-          <h2>${copy.status}</h2>
+        <div class="status-panel-top">
+          <div class="status-heading">
+            <p class="eyebrow">System</p>
+            <div class="status-title-row">
+              <p class="system-name">${copy.title}</p>
+              <div class="status-badge">${copy.status}</div>
+            </div>
+          </div>
         </div>
-        <p>${copy.storedReadings}: ${view.count}</p>
-        <p>${copy.storedTreatments}: ${view.treatmentCount ?? 0}</p>
-        <p><a href="/api/v1/status.json">${copy.viewStatusJson}</a></p>
+        <div class="status-grid">
+          <div class="status-card">
+            <p class="status-label">${copy.storedReadings}</p>
+            <p class="status-value">${view.count}</p>
+          </div>
+          <div class="status-card">
+            <p class="status-label">${copy.storedTreatments}</p>
+            <p class="status-value">${view.treatmentCount ?? 0}</p>
+          </div>
+        </div>
+        <div class="status-actions">
+          <a class="status-link" href="/api/v1/status.json">${copy.viewStatusJson}</a>
+        </div>
       </section>
     </main>
     ${autoRefreshScript}

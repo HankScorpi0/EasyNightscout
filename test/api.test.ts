@@ -345,7 +345,7 @@ describe("api", () => {
     expect(html).toContain("Correction Bolus");
     expect(html).toContain('class="reading treatment-reading">1.2 <span>U</span>');
     expect(html).toContain("Received:");
-    expect(html).toContain("Stored treatments: 1");
+    expect(html).toMatch(/Stored treatments<\/p>\s*<p class="status-value">1<\/p>/);
     expect(html).toContain("window.setTimeout(() =>");
     expect(html).toContain("window.location.reload()");
     expect(html).toContain("45000");
@@ -428,10 +428,10 @@ describe("api", () => {
 
     expect(response.status).toBe(200);
     const html = await response.text();
-    expect(html).toContain("TinyScout Lite esta funcionando");
+    expect(html).toContain("TinyScout Lite");
     expect(html).toContain("Ultimo treatment");
     expect(html).toContain("Lecturas guardadas");
-    expect(html).toContain("Treatments guardados: 1");
+    expect(html).toMatch(/Treatments guardados<\/p>\s*<p class="status-value">1<\/p>/);
     expect(html).toContain('class="reading treatment-reading">1.2 <span>U</span>');
     expect(html).toContain("Recibido hace:");
   });
