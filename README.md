@@ -6,6 +6,8 @@ Its goal is simple: receive your data and make it available to any Nightscout-co
 
 TinyScout Lite is open source. Repository: [HankScorpi0/TinyScout-Lite](https://github.com/HankScorpi0/TinyScout-Lite).
 
+It is released under the MIT License, which allows anyone to use, copy, modify, merge, publish, distribute, sublicense, and even sell the software, as long as the copyright notice and license text are kept.
+
 Spanish version: see [README.es.md](README.es.md).
 
 ## In One Sentence
@@ -202,3 +204,7 @@ npm install
 npm run test
 npm run dev
 ```
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).

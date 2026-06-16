@@ -6,6 +6,8 @@ Su idea es muy simple: recibir tus datos y hacerlos disponibles para cualquier a
 
 TinyScout Lite es código abierto. Repositorio: [HankScorpi0/TinyScout-Lite](https://github.com/HankScorpi0/TinyScout-Lite).
 
+Se publica bajo la licencia MIT, que permite a cualquiera usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar e incluso vender el software, siempre que se conserve el aviso de copyright y el texto de la licencia.
+
 Version in English: see [README.md](README.md).
 
 ## En Una Frase
@@ -202,3 +204,7 @@ npm install
 npm run test
 npm run dev
 ```
+
+## Licencia
+
+Este proyecto está licenciado bajo MIT. Consulta [LICENSE](LICENSE).

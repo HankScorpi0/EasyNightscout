@@ -34,6 +34,7 @@ interface HealthCopy {
   storedTreatments: string;
   viewStatusJson: string;
   openSource: string;
+  openSourceBody: string;
   viewRepository: string;
 }
 
@@ -70,6 +71,7 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     storedTreatments: "Stored treatments",
     viewStatusJson: "View status JSON",
     openSource: "Open source project",
+    openSourceBody: "TinyScout Lite is published openly on GitHub.",
     viewRepository: "View repository"
   },
   es: {
@@ -104,6 +106,7 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     storedTreatments: "Treatments guardados",
     viewStatusJson: "Ver status JSON",
     openSource: "Proyecto de codigo abierto",
+    openSourceBody: "TinyScout Lite esta publicado abiertamente en GitHub.",
     viewRepository: "Ver repositorio"
   }
 };
@@ -514,11 +517,38 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         letter-spacing: -0.04em;
         color: var(--text);
       }
+      .repo-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+      .repo-copy p {
+        margin: 0;
+      }
+      .repo-title {
+        font-size: 1rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+      .repo-body {
+        color: var(--muted);
+        line-height: 1.5;
+      }
       .status-actions {
         margin-top: 0.9rem;
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem;
+      }
+      .repo-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 1rem;
+        background: linear-gradient(135deg, rgba(234, 244, 255, 0.92), rgba(236, 251, 243, 0.92));
+        border-color: rgba(18, 100, 199, 0.12);
       }
       .status-link {
         display: inline-flex;
@@ -531,11 +561,10 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         font-weight: 800;
         text-decoration: none;
       }
-      .repo-note {
-        margin-top: 1rem;
-        color: var(--muted);
-        font-size: 0.95rem;
-        line-height: 1.6;
+      .repo-link {
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.82);
+        border: 1px solid rgba(18, 100, 199, 0.08);
       }
       .reading-panel {
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(238, 247, 255, 0.95));
@@ -755,6 +784,10 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         .status-grid {
           grid-template-columns: 1fr;
         }
+        .repo-card {
+          align-items: flex-start;
+          flex-direction: column;
+        }
         .detail-grid {
           grid-template-columns: 1fr;
         }
@@ -796,9 +829,15 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         </div>
         <div class="status-actions">
           <a class="status-link" href="/api/v1/status.json">${copy.viewStatusJson}</a>
-          <a class="status-link" href="https://github.com/HankScorpi0/TinyScout-Lite" target="_blank" rel="noopener noreferrer">${copy.viewRepository}</a>
         </div>
-        <p class="repo-note">${copy.openSource}</p>
+        <div class="status-card repo-card">
+          <div class="repo-copy">
+            <p class="status-label">${copy.openSource}</p>
+            <p class="repo-title">HankScorpi0/TinyScout-Lite</p>
+            <p class="repo-body">${copy.openSourceBody}</p>
+          </div>
+          <a class="status-link repo-link" href="https://github.com/HankScorpi0/TinyScout-Lite" target="_blank" rel="noopener noreferrer">${copy.viewRepository}</a>
+        </div>
       </section>
     </main>
     ${autoRefreshScript}
