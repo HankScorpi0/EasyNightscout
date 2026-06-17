@@ -1,21 +1,28 @@
-# TinyScout Lite
+# EasyNightscout
 
-TinyScout Lite es un servicio muy pequeño compatible con Nightscout que puedes desplegar gratis en Cloudflare.
+EasyNightscout es un servicio mínimo compatible con Nightscout que puedes desplegar gratis en Cloudflare.
 
-Su objetivo es simple: recibir los datos de glucosa desde `xDrip+` y hacerlos disponibles para apps que ya saben hablar con Nightscout.
+Nace para resolver un problema muy concreto: Nightscout completo puede ser más difícil de desplegar, más caro de mantener y más amplio de lo que mucha gente necesita en el día a día.
+
+EasyNightscout se queda con lo esencial:
+
+- recibir lecturas de glucosa desde `xDrip+`
+- recibir tratamientos como bolos
+- exponer una API compatible con Nightscout desde el primer día
+- seguir siendo compatible con apps y herramientas que ya hablan con Nightscout
 
 Version in English: see [README.md](README.md).  
 Guía técnica: ver [README.technical.es.md](README.technical.es.md).
 
 ## En Una Frase
 
-TinyScout Lite te permite guardar tus datos de glucosa en la nube de forma gratuita y sencilla.
+EasyNightscout es la forma más simple de mantener compatibilidad con la API de Nightscout para glucosa y bolos, sin la complejidad habitual de despliegue.
 
 ## Advertencia Importante
 
 - No es un dispositivo médico.
 - No debe usarse para dosificación ni decisiones de tratamiento.
-- Úsalo solo como respaldo o recuperación.
+- Úsalo solo como respaldo, recuperación o capa ligera de compatibilidad.
 
 ## Para Quién Es
 
@@ -23,16 +30,17 @@ Este proyecto es para ti si:
 
 - ya usas `xDrip+`
 - quieres un despliegue gratis en la nube
-- quieres un respaldo sencillo si tu proveedor principal falla
-- usas apps compatibles con Nightscout como `Zukkah`
-- no quieres mantener una instalación completa de Nightscout
+- buscas una alternativa más simple que una instalación completa de Nightscout
+- necesitas compatibilidad con apps del ecosistema Nightscout como `Zukkah`
+- sobre todo te importan las lecturas de glucosa, los bolos y la compatibilidad amplia
 
 ## Qué Hace
 
 - Recibe lecturas de glucosa desde `xDrip+`
 - Guarda lecturas recientes y tratamientos
-- Funciona con apps compatibles con Nightscout
-- Muestra una página simple de estado en el navegador
+- Replica la forma de la API de Nightscout que usan los clientes existentes
+- Funciona con apps y herramientas compatibles con Nightscout
+- Muestra una página simple de `health` en el navegador
 
 ## Qué No Hace
 
@@ -40,7 +48,7 @@ Este proyecto es para ti si:
 - No es tu sistema médico principal
 - No incluye gráficas, informes ni análisis avanzados
 
-Si quieres una web completa con gráficas y reportes, Nightscout completo encaja mejor.
+Si necesitas la experiencia completa de Nightscout, Nightscout completo sigue siendo la mejor opción.
 
 ## Despliegue Gratis Más Rápido
 
@@ -56,7 +64,7 @@ La forma más fácil es usar el flujo oficial de Cloudflare:
 2. Sigue las pantallas de Cloudflare hasta que termine el despliegue.
 3. Abre la URL que te da Cloudflare, por ejemplo `https://tu-worker.workers.dev/health`.
 
-En la primera visita, TinyScout Lite crea automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez. Guárdalo en ese momento, porque lo necesitarás en `xDrip+`.
+En la primera visita, EasyNightscout crea automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez. Guárdalo en ese momento, porque lo necesitarás en `xDrip+`.
 
 ## Configurar xDrip+
 
@@ -107,6 +115,18 @@ También puedes revisar:
 https://tu-worker.workers.dev/api/v1/status.json
 ```
 
+## Por Qué Importa La Compatibilidad Con Nightscout
+
+El valor principal de EasyNightscout no es solo que sea más pequeño.
+
+Es que te permite seguir usando el ecosistema Nightscout que ya conoces:
+
+- apps móviles
+- herramientas de seguimiento
+- integraciones que ya hablan con la API de Nightscout
+
+Eso reduce muchísimo la fricción del cambio y simplifica el despliegue.
+
 ## Si Algo No Funciona
 
 ### No Aparecen Datos
@@ -128,7 +148,7 @@ https://tu-worker.workers.dev/api/v1/status.json
 ### La Página Abre Pero Los Datos Son Antiguos
 
 - Revisa la hora y la zona horaria del teléfono
-- TinyScout Lite solo conserva las lecturas más recientes
+- EasyNightscout solo conserva las lecturas más recientes
 
 ## Licencia
 

@@ -70,14 +70,14 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     notes: "Notes",
     noNotes: "No notes",
     noTreatments: "No treatments received yet.",
-    noTreatmentsBody: "TinyScout Lite will show the most recent Nightscout-compatible treatment here.",
-    title: "TinyScout Lite",
+    noTreatmentsBody: "EasyNightscout will show the most recent Nightscout-compatible treatment here.",
+    title: "EasyNightscout",
     status: "Status",
     storedReadings: "Stored readings",
     storedTreatments: "Stored treatments",
     viewStatusJson: "View status JSON",
     openSource: "Open source project",
-    openSourceBody: "TinyScout Lite is published openly on GitHub.",
+    openSourceBody: "EasyNightscout is published openly on GitHub and keeps Nightscout API compatibility front and center.",
     viewRepository: "View repository"
   },
   es: {
@@ -108,14 +108,14 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     notes: "Notas",
     noNotes: "Sin notas",
     noTreatments: "Todavia no se han recibido treatments.",
-    noTreatmentsBody: "TinyScout Lite mostrara aqui el treatment compatible con Nightscout mas reciente.",
-    title: "TinyScout Lite",
+    noTreatmentsBody: "EasyNightscout mostrara aqui el treatment compatible con Nightscout mas reciente.",
+    title: "EasyNightscout",
     status: "Estado",
     storedReadings: "Lecturas guardadas",
     storedTreatments: "Treatments guardados",
     viewStatusJson: "Ver status JSON",
     openSource: "Proyecto de codigo abierto",
-    openSourceBody: "TinyScout Lite esta publicado abiertamente en GitHub.",
+    openSourceBody: "EasyNightscout esta publicado abiertamente en GitHub y mantiene la compatibilidad con la API de Nightscout como pieza central.",
     viewRepository: "Ver repositorio"
   }
 };
@@ -241,7 +241,7 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
   const exampleSecret = view.setupSecret ?? "YOUR_API_SECRET";
   const exampleUrl = `https://${exampleSecret}@${view.baseUrl.replace(/^https?:\/\//, "")}/api/v1/`;
   const acknowledgePath = locale === "es" ? "/es/setup/acknowledge" : "/setup/acknowledge";
-  const pageTitle = view.latest ? `${view.latest.sgv} mg/dL | TinyScout Lite` : "TinyScout Lite";
+  const pageTitle = view.latest ? `${view.latest.sgv} mg/dL | EasyNightscout` : "EasyNightscout";
   const latestAge = view.latest ? formatElapsed(view.latest.date, Date.now(), copy) : null;
   const latestTreatmentAge = view.latestTreatment ? formatElapsed(view.latestTreatment.mills, Date.now(), copy) : null;
   const latestDirection = directionToArrow(view.latest?.direction, copy.noData);
@@ -847,7 +847,7 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
             aria-label="${serviceState.label}"
             title="${serviceState.label}"
           ></span>
-          <p class="brand-mark">TinyScout <span>Lite</span> <small>CGM</small></p>
+          <p class="brand-mark">Easy<span>Nightscout</span> <small>CGM</small></p>
         </div>
       </div>
       <div class="layout">
@@ -881,7 +881,7 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         <div class="status-card repo-card">
           <div class="repo-copy">
             <p class="status-label">${copy.openSource}</p>
-            <p class="repo-title">HankScorpi0/TinyScout-Lite</p>
+            <p class="repo-title">EasyNightscout source code</p>
             <p class="repo-body">${copy.openSourceBody}</p>
           </div>
           <a class="status-link repo-link" href="https://github.com/HankScorpi0/TinyScout-Lite" target="_blank" rel="noopener noreferrer">${copy.viewRepository}</a>

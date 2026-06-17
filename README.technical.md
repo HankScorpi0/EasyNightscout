@@ -1,4 +1,4 @@
-# TinyScout Lite Technical Guide
+# EasyNightscout Technical Guide
 
 This document is for developers and advanced users.  
 If you only want to deploy and configure `xDrip+`, see [README.md](README.md).
@@ -7,13 +7,13 @@ Spanish version: see [README.technical.es.md](README.technical.es.md).
 
 ## Scope
 
-TinyScout Lite is a reduced Nightscout-compatible service designed to:
+EasyNightscout is a reduced Nightscout-compatible service designed to:
 
 - accept `entries`
 - accept `treatments`
 - provide minimal `profile` compatibility
 - expose a health/status page
-- keep the deployment very small and simple
+- keep deployment small, simple, and inexpensive
 
 Current limitations:
 
@@ -21,6 +21,12 @@ Current limitations:
 - `treatments` delete support is minimal and mainly for client compatibility
 - it does not keep full profile history
 - `devicestatus` is exposed as an empty collection for compatibility
+
+## Design Intent
+
+The goal is not to replace every Nightscout feature.
+
+The goal is to preserve the Nightscout API surface that many existing apps and integrations already understand, while keeping operations dramatically simpler.
 
 ## Environment Variables
 
@@ -57,7 +63,7 @@ Current profile support includes:
 
 ## Secret Management
 
-On first visit, TinyScout Lite can generate a 6-character `API_SECRET` automatically and show it once.
+On first visit, EasyNightscout can generate a 6-character `API_SECRET` automatically and show it once.
 
 If you need to manage the secret manually, set `API_SECRET` yourself in the Cloudflare Worker configuration.
 

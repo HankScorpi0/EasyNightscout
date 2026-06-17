@@ -1,21 +1,28 @@
-# TinyScout Lite
+# EasyNightscout
 
-TinyScout Lite is a very small Nightscout-compatible service that you can deploy for free on Cloudflare.
+EasyNightscout is a minimal Nightscout-compatible service you can deploy for free on Cloudflare.
 
-Its purpose is simple: receive glucose data from `xDrip+` and make it available to apps that already know how to talk to Nightscout.
+It was built for a very specific problem: full Nightscout can be harder to deploy, more expensive to keep online, and broader than what many people actually need every day.
+
+EasyNightscout keeps the essentials:
+
+- receive glucose readings from `xDrip+`
+- receive treatments such as boluses
+- expose a Nightscout-compatible API from day one
+- stay compatible with apps and tools that already support Nightscout
 
 Spanish version: see [README.es.md](README.es.md).  
 Technical guide: see [README.technical.md](README.technical.md).
 
 ## In One Sentence
 
-TinyScout Lite lets you store your glucose data in the cloud for free, simply and easily.
+EasyNightscout gives you the simplest way to keep Nightscout API compatibility for glucose readings and boluses, without the usual deployment overhead.
 
 ## Important Warning
 
 - This is not a medical device.
 - Do not use it for dosing or treatment decisions.
-- Use it only as a backup or recovery option.
+- Use it only as a backup, recovery, or lightweight compatibility layer.
 
 ## Who This Is For
 
@@ -23,15 +30,16 @@ This project is for you if:
 
 - you already use `xDrip+`
 - you want a free cloud deployment
-- you want a simple backup if your main provider fails
-- you use Nightscout-compatible apps such as `Zukkah`
-- you do not want to maintain a full Nightscout installation
+- you want a simpler alternative to a full Nightscout setup
+- you need compatibility with Nightscout-enabled apps such as `Zukkah`
+- you mainly care about glucose readings, boluses, and broad ecosystem compatibility
 
 ## What It Does
 
 - Receives glucose readings from `xDrip+`
 - Stores recent readings and treatments
-- Works with Nightscout-compatible apps
+- Mirrors the Nightscout API shape used by existing clients
+- Works with Nightscout-compatible apps and tools
 - Shows a simple health page in the browser
 
 ## What It Does Not Do
@@ -40,7 +48,7 @@ This project is for you if:
 - It is not your primary medical system
 - It does not include charts, reports, or advanced analysis
 
-If you want a complete web app with charts and reports, full Nightscout is a better fit.
+If you need the complete Nightscout experience, full Nightscout is still the better fit.
 
 ## Fastest Free Deployment
 
@@ -56,7 +64,7 @@ The easiest option is the official Cloudflare flow:
 2. Follow the Cloudflare screens until the deployment finishes.
 3. Open the URL Cloudflare gives you, for example `https://your-worker.workers.dev/health`.
 
-On the first visit, TinyScout Lite creates a 6-character `API_SECRET` automatically and shows it once. Save it immediately, because you will need it in `xDrip+`.
+On the first visit, EasyNightscout creates a 6-character `API_SECRET` automatically and shows it once. Save it immediately, because you will need it in `xDrip+`.
 
 ## Configure xDrip+
 
@@ -107,6 +115,18 @@ You can also check:
 https://your-worker.workers.dev/api/v1/status.json
 ```
 
+## Why The Nightscout Compatibility Matters
+
+The main value of EasyNightscout is not just that it is smaller.
+
+It is that you can keep using the Nightscout ecosystem you already know:
+
+- mobile apps
+- follower tools
+- integrations that already talk to the Nightscout API
+
+That means less migration friction and a much easier deployment story.
+
 ## If Something Does Not Work
 
 ### No Data Appears
@@ -128,7 +148,7 @@ https://your-worker.workers.dev/api/v1/status.json
 ### The Page Opens But Data Is Old
 
 - Check the phone time and timezone
-- TinyScout Lite only keeps the most recent entries
+- EasyNightscout only keeps the most recent entries
 
 ## License
 

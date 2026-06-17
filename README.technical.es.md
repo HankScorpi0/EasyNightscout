@@ -1,4 +1,4 @@
-# Guía Técnica De TinyScout Lite
+# Guía Técnica De EasyNightscout
 
 Este documento es para desarrolladores y usuarios avanzados.  
 Si solo quieres desplegarlo y configurarlo en `xDrip+`, consulta [README.es.md](README.es.md).
@@ -7,13 +7,13 @@ Version in English: see [README.technical.md](README.technical.md).
 
 ## Alcance
 
-TinyScout Lite es un servicio reducido compatible con Nightscout diseñado para:
+EasyNightscout es un servicio reducido compatible con Nightscout diseñado para:
 
 - aceptar `entries`
 - aceptar `treatments`
 - ofrecer compatibilidad mínima con `profile`
-- exponer una página de health/status
-- mantener el despliegue muy pequeño y sencillo
+- exponer una página de `health` y estado
+- mantener un despliegue pequeño, simple y barato
 
 Limitaciones actuales:
 
@@ -21,6 +21,12 @@ Limitaciones actuales:
 - el borrado de `treatments` es mínimo y busca sobre todo compatibilidad con clientes
 - no guarda historial completo de perfiles
 - `devicestatus` se expone como colección vacía por compatibilidad
+
+## Intención Del Diseño
+
+El objetivo no es reemplazar todas las funciones de Nightscout.
+
+El objetivo es conservar la superficie de API de Nightscout que muchas apps e integraciones ya entienden, reduciendo al mismo tiempo la complejidad operativa al mínimo.
 
 ## Variables De Entorno
 
@@ -57,7 +63,7 @@ El soporte actual de perfiles incluye:
 
 ## Gestión Del Secreto
 
-En la primera visita, TinyScout Lite puede generar automáticamente un `API_SECRET` de 6 caracteres y mostrarlo una sola vez.
+En la primera visita, EasyNightscout puede generar automáticamente un `API_SECRET` de 6 caracteres y mostrarlo una sola vez.
 
 Si necesitas gestionarlo manualmente, define `API_SECRET` tú mismo en la configuración del Worker de Cloudflare.
 

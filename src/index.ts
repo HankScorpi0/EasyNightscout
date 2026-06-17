@@ -24,7 +24,7 @@ import type {
 
 export { EntriesDurableObject };
 
-const APP_NAME = "TinyScout Lite";
+const APP_NAME = "EasyNightscout";
 const APP_VERSION = "0.1.0";
 const EMPTY_COLLECTION = [];
 const API_BASE_PATHS = new Set(["/api/v1", "/api/v1/"]);
