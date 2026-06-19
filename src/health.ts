@@ -884,7 +884,7 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
             <p class="repo-title">GlucoEasy source code</p>
             <p class="repo-body">${copy.openSourceBody}</p>
           </div>
-          <a class="status-link repo-link" href="https://github.com/HankScorpi0/TinyScout-Lite" target="_blank" rel="noopener noreferrer">${copy.viewRepository}</a>
+          <a class="status-link repo-link" href="https://github.com/HankScorpi0/GlucoEasy" target="_blank" rel="noopener noreferrer">${copy.viewRepository}</a>
         </div>
       </section>
     </main>
