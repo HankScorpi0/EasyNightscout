@@ -1,6 +1,8 @@
 import type { QueryFilter, Treatment, TreatmentQuery } from "./types";
 
 export const DEFAULT_QUERY_COUNT = 10;
+export const DEFAULT_TREATMENT_LOOKBACK_HOURS = 24;
+export const DEFAULT_TREATMENT_LOOKBACK_COUNT = 1000;
 
 function parseEpoch(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -162,8 +164,22 @@ export function parseTreatmentQuery(url: URL): TreatmentQuery {
     });
   }
 
+  const hasDateFilter = filters.some((filter) =>
+    ["mills", "created_at", "timestamp", "date", "dateString"].includes(filter.field)
+  );
+  const hasExplicitCount = url.searchParams.has("count");
+  const count = hasExplicitCount ? parseCount(url) : DEFAULT_TREATMENT_LOOKBACK_COUNT;
+
+  if (!hasDateFilter) {
+    filters.push({
+      field: "mills",
+      operator: "$gte",
+      value: String(Date.now() - DEFAULT_TREATMENT_LOOKBACK_HOURS * 60 * 60 * 1000)
+    });
+  }
+
   return {
-    count: parseCount(url),
+    count,
     filters
   };
 }

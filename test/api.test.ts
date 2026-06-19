@@ -1,7 +1,8 @@
 import { SELF, env, reset } from "cloudflare:test";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 afterEach(async () => {
+  vi.useRealTimers();
   await reset();
 });
 
@@ -212,7 +213,7 @@ describe("api", () => {
     expect(postResponse.status).toBe(200);
 
     const treatmentsResponse = await SELF.fetch(
-      "https://example.com/api/v1/treatments.json?count=1&find[eventType]=Correction%20Bolus",
+      "https://example.com/api/v1/treatments.json?count=1&find[eventType]=Correction%20Bolus&find[mills][$gte]=1781120000000",
       { headers: secretHeader(secret) }
     );
     expect(treatmentsResponse.status).toBe(200);
@@ -221,6 +222,37 @@ describe("api", () => {
     expect(treatments).toHaveLength(1);
     expect(treatments[0].eventType).toBe("Correction Bolus");
     expect(treatments[0].mills).toBe(1781121900000);
+  });
+
+  it("returns only treatments from the last 24 hours by default", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-11T12:00:00.000Z"));
+
+    const { secret, cookie } = await initializeSetup();
+    await acknowledgeSetup(cookie);
+
+    await postTreatments([
+      {
+        eventType: "Correction Bolus",
+        created_at: "2026-06-10T13:00:00.000Z",
+        insulin: 1.5
+      },
+      {
+        eventType: "Correction Bolus",
+        created_at: "2026-06-10T11:00:00.000Z",
+        insulin: 1.1
+      }
+    ], secretHeader(secret));
+
+    const treatmentsResponse = await SELF.fetch(
+      "https://example.com/api/v1/treatments.json",
+      { headers: secretHeader(secret) }
+    );
+    expect(treatmentsResponse.status).toBe(200);
+
+    const treatments = (await treatmentsResponse.json()) as Array<{ created_at: string }>;
+    expect(treatments).toHaveLength(1);
+    expect(treatments[0].created_at).toBe("2026-06-10T13:00:00.000Z");
   });
 
   it("supports idempotent treatment deletes for tconnectsync", async () => {

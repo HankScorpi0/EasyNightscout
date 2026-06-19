@@ -1,10 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  DEFAULT_TREATMENT_LOOKBACK_COUNT,
   mergeTreatments,
   normalizeTreatments,
   parseTreatmentQuery,
   queryTreatments
 } from "../src/treatments";
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("treatments helpers", () => {
   it("normalizes created_at and mills", () => {
@@ -72,6 +77,20 @@ describe("treatments helpers", () => {
       filters: [
         { field: "eventType", operator: "$eq", value: "Carb Correction" },
         { field: "mills", operator: "$gte", value: "100" }
+      ]
+    });
+  });
+
+  it("defaults treatments queries to the last 24 hours when no date range is provided", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-11T12:00:00.000Z"));
+
+    const url = new URL("https://example.com/api/v1/treatments.json");
+
+    expect(parseTreatmentQuery(url)).toEqual({
+      count: DEFAULT_TREATMENT_LOOKBACK_COUNT,
+      filters: [
+        { field: "mills", operator: "$gte", value: "1781092800000" }
       ]
     });
   });
