@@ -1,10 +1,10 @@
-# EasyNightscout
+# GlucoEasy
 
-EasyNightscout es un servicio mínimo compatible con Nightscout que puedes desplegar gratis en Cloudflare.
+GlucoEasy es un servicio mínimo de monitorización de glucosa que puedes desplegar gratis en Cloudflare.
 
 Nace para resolver un problema muy concreto: Nightscout completo puede ser más difícil de desplegar, más caro de mantener y más amplio de lo que mucha gente necesita en el día a día.
 
-EasyNightscout se queda con lo esencial:
+GlucoEasy se queda con lo esencial:
 
 - recibir lecturas de glucosa desde `xDrip+`
 - recibir tratamientos como bolos
@@ -16,7 +16,7 @@ Guía técnica: ver [README.technical.es.md](README.technical.es.md).
 
 ## En Una Frase
 
-EasyNightscout es la forma más simple de mantener compatibilidad con la API de Nightscout para glucosa y bolos, sin la complejidad habitual de despliegue.
+GlucoEasy es una forma simple de mantener compatibilidad con apps que soportan Nightscout para glucosa y bolos, sin la complejidad habitual de despliegue.
 
 ## Advertencia Importante
 
@@ -64,7 +64,7 @@ La forma más fácil es usar el flujo oficial de Cloudflare:
 2. Sigue las pantallas de Cloudflare hasta que termine el despliegue.
 3. Abre la URL que te da Cloudflare, por ejemplo `https://tu-worker.workers.dev/health`.
 
-En la primera visita, EasyNightscout crea automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez. Guárdalo en ese momento, porque lo necesitarás en `xDrip+`.
+En la primera visita, GlucoEasy crea automáticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez. Guárdalo en ese momento, porque lo necesitarás en `xDrip+`.
 
 ## Configurar xDrip+
 
@@ -117,7 +117,7 @@ https://tu-worker.workers.dev/api/v1/status.json
 
 ## Por Qué Importa La Compatibilidad Con Nightscout
 
-El valor principal de EasyNightscout no es solo que sea más pequeño.
+El valor principal de GlucoEasy no es solo que sea más pequeño.
 
 Es que te permite seguir usando el ecosistema Nightscout que ya conoces:
 
@@ -148,7 +148,7 @@ Eso reduce muchísimo la fricción del cambio y simplifica el despliegue.
 ### La Página Abre Pero Los Datos Son Antiguos
 
 - Revisa la hora y la zona horaria del teléfono
-- EasyNightscout solo conserva las lecturas más recientes
+- GlucoEasy solo conserva las lecturas más recientes
 
 ## Licencia
 

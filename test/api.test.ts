@@ -377,7 +377,7 @@ describe("api", () => {
 
     expect(response.status).toBe(200);
     const html = await response.text();
-    expect(html).toContain("EasyNightscout");
+    expect(html).toContain("GlucoEasy");
     expect(html).toContain("Stored readings");
     expect(html).toContain("Latest treatment");
     expect(html).toContain("Correction Bolus");
@@ -466,7 +466,7 @@ describe("api", () => {
 
     expect(response.status).toBe(200);
     const html = await response.text();
-    expect(html).toContain("EasyNightscout");
+    expect(html).toContain("GlucoEasy");
     expect(html).toContain("Ultimo treatment");
     expect(html).toContain("Lecturas guardadas");
     expect(html).toMatch(/Treatments guardados<\/p>\s*<p class="status-value">1<\/p>/);

@@ -1,4 +1,4 @@
-# Guía Técnica De EasyNightscout
+# Guía Técnica De GlucoEasy
 
 Este documento es para desarrolladores y usuarios avanzados.  
 Si solo quieres desplegarlo y configurarlo en `xDrip+`, consulta [README.es.md](README.es.md).
@@ -7,7 +7,7 @@ Version in English: see [README.technical.md](README.technical.md).
 
 ## Alcance
 
-EasyNightscout es un servicio reducido compatible con Nightscout diseñado para:
+GlucoEasy es un servicio reducido de monitorización de glucosa diseñado para:
 
 - aceptar `entries`
 - aceptar `treatments`
@@ -63,7 +63,7 @@ El soporte actual de perfiles incluye:
 
 ## Gestión Del Secreto
 
-En la primera visita, EasyNightscout puede generar automáticamente un `API_SECRET` de 6 caracteres y mostrarlo una sola vez.
+En la primera visita, GlucoEasy puede generar automáticamente un `API_SECRET` de 6 caracteres y mostrarlo una sola vez.
 
 Si necesitas gestionarlo manualmente, define `API_SECRET` tú mismo en la configuración del Worker de Cloudflare.
 

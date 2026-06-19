@@ -1,4 +1,4 @@
-# EasyNightscout Technical Guide
+# GlucoEasy Technical Guide
 
 This document is for developers and advanced users.  
 If you only want to deploy and configure `xDrip+`, see [README.md](README.md).
@@ -7,7 +7,7 @@ Spanish version: see [README.technical.es.md](README.technical.es.md).
 
 ## Scope
 
-EasyNightscout is a reduced Nightscout-compatible service designed to:
+GlucoEasy is a reduced glucose monitoring service designed to:
 
 - accept `entries`
 - accept `treatments`
@@ -63,7 +63,7 @@ Current profile support includes:
 
 ## Secret Management
 
-On first visit, EasyNightscout can generate a 6-character `API_SECRET` automatically and show it once.
+On first visit, GlucoEasy can generate a 6-character `API_SECRET` automatically and show it once.
 
 If you need to manage the secret manually, set `API_SECRET` yourself in the Cloudflare Worker configuration.
 

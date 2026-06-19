@@ -1,10 +1,10 @@
-# EasyNightscout
+# GlucoEasy
 
-EasyNightscout is a minimal Nightscout-compatible service you can deploy for free on Cloudflare.
+GlucoEasy is a minimal glucose monitoring service you can deploy for free on Cloudflare.
 
 It was built for a very specific problem: full Nightscout can be harder to deploy, more expensive to keep online, and broader than what many people actually need every day.
 
-EasyNightscout keeps the essentials:
+GlucoEasy keeps the essentials:
 
 - receive glucose readings from `xDrip+`
 - receive treatments such as boluses
@@ -16,7 +16,7 @@ Technical guide: see [README.technical.md](README.technical.md).
 
 ## In One Sentence
 
-EasyNightscout gives you the simplest way to keep Nightscout API compatibility for glucose readings and boluses, without the usual deployment overhead.
+GlucoEasy gives you a simple way to keep compatibility with Nightscout-enabled apps for glucose readings and boluses, without the usual deployment overhead.
 
 ## Important Warning
 
@@ -64,7 +64,7 @@ The easiest option is the official Cloudflare flow:
 2. Follow the Cloudflare screens until the deployment finishes.
 3. Open the URL Cloudflare gives you, for example `https://your-worker.workers.dev/health`.
 
-On the first visit, EasyNightscout creates a 6-character `API_SECRET` automatically and shows it once. Save it immediately, because you will need it in `xDrip+`.
+On the first visit, GlucoEasy creates a 6-character `API_SECRET` automatically and shows it once. Save it immediately, because you will need it in `xDrip+`.
 
 ## Configure xDrip+
 
@@ -117,7 +117,7 @@ https://your-worker.workers.dev/api/v1/status.json
 
 ## Why The Nightscout Compatibility Matters
 
-The main value of EasyNightscout is not just that it is smaller.
+The main value of GlucoEasy is not just that it is smaller.
 
 It is that you can keep using the Nightscout ecosystem you already know:
 
@@ -148,7 +148,7 @@ That means less migration friction and a much easier deployment story.
 ### The Page Opens But Data Is Old
 
 - Check the phone time and timezone
-- EasyNightscout only keeps the most recent entries
+- GlucoEasy only keeps the most recent entries
 
 ## License
 
