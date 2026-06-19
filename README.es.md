@@ -2,13 +2,13 @@
 
 GlucoEasy es un servicio secundario de monitorizacion de glucosa que puedes desplegar gratis en Cloudflare.
 
-Nace para un caso muy concreto: cuando tu servicio principal o el proveedor oficial falla, tener una segunda capa funcionando te da tranquilidad sin obligarte a mantener una instalacion compleja.
+Nace para un caso muy concreto: cuando tu servicio principal o el proveedor oficial falla, tener una segunda opcion funcionando te da tranquilidad sin obligarte a mantener una instalacion compleja.
 
 GlucoEasy se centra en lo esencial:
 
 - actuar como respaldo cuando tu servicio principal no responde
-- seguir exponiendo una API compatible con Nightscout
-- permitirte usar apps como `xDrip+`, `Zukkah` y otras compatibles con Nightscout
+- seguir funcionando con apps que ya usan Nightscout
+- permitirte usar apps como `xDrip+`, `Zukkah` y otras parecidas
 - desplegarse de forma muy facil y gratis en la nube
 
 Version in English: see [README.md](README.md).  
@@ -16,20 +16,20 @@ Guía técnica: ver [README.technical.es.md](README.technical.es.md).
 
 ## En Una Frase
 
-GlucoEasy es tu servicio secundario de tranquilidad: cuando falla el principal, sigues teniendo una capa compatible con Nightscout, facil de instalar y gratis en la nube.
+GlucoEasy es tu servicio secundario de tranquilidad: cuando falla el principal, sigues teniendo una forma sencilla de seguir conectado con tus apps compatibles con Nightscout, facil de instalar y gratis en la nube.
 
 ## Advertencia Importante
 
 - No es un dispositivo médico.
 - No debe usarse para dosificación ni decisiones de tratamiento.
-- Usalo solo como respaldo, recuperacion o capa ligera de compatibilidad.
+- Usalo solo como respaldo, recuperacion o forma sencilla de mantener tus conexiones funcionando.
 
 ## Para Quién Es
 
 Este proyecto es para ti si:
 
 - quieres una segunda opcion cuando falle el servicio principal
-- ya usas `xDrip+`, `Zukkah` o cualquier app compatible con Nightscout
+- ya usas `xDrip+`, `Zukkah` o cualquier app que funcione con Nightscout
 - buscas algo muy facil de instalar y mantener
 - quieres un despliegue gratis en la nube
 - te importan sobre todo las lecturas de glucosa, los bolos y la compatibilidad amplia
@@ -38,9 +38,9 @@ Este proyecto es para ti si:
 
 - Recibe lecturas de glucosa desde `xDrip+`
 - Guarda lecturas recientes y tratamientos
-- Replica la forma de la API de Nightscout que usan los clientes existentes
-- Funciona como capa secundaria para apps y herramientas compatibles con Nightscout
-- Muestra una página simple de `health` en el navegador
+- Se entiende con apps que ya estaban pensadas para Nightscout
+- Funciona como servicio secundario para apps y herramientas compatibles
+- Muestra una pagina simple de estado en el navegador
 
 ## Qué No Hace
 
@@ -54,7 +54,7 @@ Si necesitas la experiencia completa de Nightscout, Nightscout completo sigue si
 
 La idea no es sustituir tu sistema principal.
 
-La idea es que, si el proveedor oficial o tu servicio principal falla, no te quedes sin una via sencilla para seguir usando el ecosistema Nightscout que ya conoces.
+La idea es que, si el proveedor oficial o tu servicio principal falla, no te quedes sin una via sencilla para seguir usando las apps y herramientas que ya conoces.
 
 ## Despliegue Gratis Mas Rapido
 
@@ -70,7 +70,7 @@ La forma más fácil es usar el flujo oficial de Cloudflare:
 2. Sigue las pantallas de Cloudflare hasta que termine el despliegue.
 3. Abre la URL que te da Cloudflare, por ejemplo `https://tu-worker.workers.dev/health`.
 
-En la primera visita, GlucoEasy crea automaticamente un `API_SECRET` de 6 caracteres y lo muestra una sola vez. Guardalo en ese momento, porque lo necesitaras en `xDrip+` o cualquier cliente compatible.
+En la primera visita, GlucoEasy crea automaticamente un codigo secreto de 6 caracteres y lo muestra una sola vez. Guardalo en ese momento, porque lo necesitaras en `xDrip+` o en cualquier otra app compatible.
 
 ## Configurar xDrip+
 
@@ -82,7 +82,7 @@ https://API_SECRET@tu-worker.workers.dev/api/v1/
 
 Sustituye:
 
-- `API_SECRET` por tu secreto de 6 caracteres
+- `API_SECRET` por tu codigo secreto de 6 caracteres
 - `tu-worker.workers.dev` por la URL de Cloudflare
 
 Importante:
@@ -92,13 +92,13 @@ Importante:
 
 ## Apps Compatibles
 
-Como GlucoEasy mantiene compatibilidad con Nightscout, puedes conectarlo a:
+Como GlucoEasy funciona con el formato que usan muchas apps de Nightscout, puedes conectarlo a:
 
 - `xDrip+`
 - `Zukkah`
-- otras apps o integraciones que ya sepan hablar con Nightscout
+- otras apps o integraciones que ya funcionen con Nightscout
 
-Ese es uno de sus puntos fuertes: no tienes que reconstruir tu flujo, solo anadir una capa secundaria.
+Ese es uno de sus puntos fuertes: no tienes que cambiar toda tu forma de uso, solo anadir un respaldo.
 
 ## Cómo Comprobar Que Funciona
 
@@ -114,7 +114,7 @@ Página en español:
 https://tu-worker.workers.dev/es/health
 ```
 
-Ejemplo de la pantalla `health` en español:
+Ejemplo de la pantalla de estado en espanol:
 
 ![Pantalla health en español](docs/images/health-es.png)
 
@@ -125,21 +125,21 @@ Deberías ver:
 - cuántas lecturas hay guardadas
 - cuántos tratamientos hay guardados
 
-También puedes revisar:
+Tambien puedes revisar:
 
 ```text
 https://tu-worker.workers.dev/api/v1/status.json
 ```
 
-## Por Que Importa La Compatibilidad Con Nightscout
+## Por Que Importa Que Funcione Con Nightscout
 
 El valor principal de GlucoEasy no es solo que sea pequeno.
 
-Es que te deja seguir usando el ecosistema que ya conoces incluso como servicio secundario:
+Es que te deja seguir usando lo que ya conoces incluso como servicio secundario:
 
 - apps moviles
 - herramientas de seguimiento
-- integraciones que ya hablan con la API de Nightscout
+- integraciones que ya funcionan con Nightscout
 
 Eso reduce muchisimo la friccion y hace mas facil tener un plan B real.
 
@@ -148,7 +148,7 @@ Eso reduce muchisimo la friccion y hace mas facil tener un plan B real.
 ### No Aparecen Datos
 
 - Comprueba que `xDrip+` use la URL completa con `/api/v1/`
-- Comprueba que el `API_SECRET` sea correcto
+- Comprueba que el codigo secreto sea correcto
 - Abre `/health` y revisa si aparecen lecturas recientes
 
 ### Error 401
