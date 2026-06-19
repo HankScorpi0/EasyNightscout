@@ -62,6 +62,49 @@ You do not need to understand what Cloudflare is or know what "deploy" means: ju
 
 On the first visit, GlucoEasy creates a 6-character secret code automatically and shows it once. Save it immediately, because you will need it in `xDrip+` or any other compatible app.
 
+## Detailed Deployment Walkthrough
+
+If this is your first time using Cloudflare Workers, these are the exact screens you should expect:
+
+1. Open the `Install GlucoEasy for free` link.
+2. On the Cloudflare sign-in page, continue with `Google` if that is the account you want to use.
+
+![Cloudflare sign-in screen](docs/images/deploy-step-01-cloudflare-signin.jpeg)
+
+3. In the `Set up your application` screen, open the `Git account` selector.
+4. Choose `New GitHub connection`.
+
+![Git account selector in Cloudflare](docs/images/deploy-step-02-git-account.jpeg)
+
+![Create a new GitHub connection](docs/images/deploy-step-03-new-github-connection.jpeg)
+
+5. GitHub will open. Sign in there, and if you use Google for GitHub, continue with `Continue with Google`.
+6. If you do not already have a GitHub account, complete the GitHub sign-up form and create it.
+7. When GitHub asks to authorize `Cloudflare Workers and Pages`, approve it with `Install & Authorize`.
+
+![GitHub sign-in with Google](docs/images/deploy-step-04-github-google.jpeg)
+
+![Google authorization for GitHub](docs/images/deploy-step-05-google-authorize.jpeg)
+
+![GitHub sign-up screen if you do not have an account yet](docs/images/deploy-step-06-github-signup.jpeg)
+
+![Install and authorize Cloudflare Workers and Pages](docs/images/deploy-step-07-install-authorize.jpeg)
+
+8. You will return to Cloudflare. Confirm that your GitHub account now appears in `Git account`.
+9. Leave the default project values unless you specifically need to change them, then click `Deploy`.
+
+![GitHub account connected and ready to deploy](docs/images/deploy-step-08-deploy.jpeg)
+
+10. Wait for the deployment log to finish. When it completes, Cloudflare will show your worker URL, for example `https://your-worker.workers.dev`.
+11. Open `https://your-worker.workers.dev/health`.
+12. Save the 6-character secret shown on that page and also save the full xDrip+ URL shown there, for example `https://API_SECRET@your-worker.workers.dev/api/v1/`.
+
+![Deployment finished with the worker URL visible](docs/images/deploy-step-09-worker-url.jpeg)
+
+![Health page showing the secret and xDrip+ URL](docs/images/deploy-step-10-secret-and-xdrip-url.jpeg)
+
+If Cloudflare asks for permission to create or connect a repository during setup, accept it. That connection is what allows the one-click installation flow to finish correctly.
+
 ## Configure xDrip+
 
 In `xDrip+`, use the `Nightscout Sync REST API` option and enter:

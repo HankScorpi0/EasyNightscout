@@ -62,6 +62,49 @@ No hace falta entender que es Cloudflare ni saber "desplegar" nada: solo sigue l
 
 En la primera visita, GlucoEasy crea automaticamente un codigo secreto de 6 caracteres y lo muestra una sola vez. Guardalo en ese momento, porque lo necesitaras en `xDrip+` o en cualquier otra app compatible.
 
+## Guia Detallada De Despliegue
+
+Si es tu primera vez usando Cloudflare Workers, estas son las pantallas y pasos exactos que deberias seguir:
+
+1. Abre el enlace `Instalar GlucoEasy gratis`.
+2. En la pantalla de inicio de sesion de Cloudflare, entra con `Google` si esa es la cuenta que quieres usar.
+
+![Pantalla de inicio de sesion de Cloudflare](docs/images/deploy-step-01-cloudflare-signin.jpeg)
+
+3. En la pantalla `Set up your application`, abre el selector `Git account`.
+4. Elige `New GitHub connection`.
+
+![Selector de cuenta Git en Cloudflare](docs/images/deploy-step-02-git-account.jpeg)
+
+![Crear una nueva conexion con GitHub](docs/images/deploy-step-03-new-github-connection.jpeg)
+
+5. Se abrira GitHub. Inicia sesion alli y, si tu acceso a GitHub usa Google, pulsa `Continue with Google`.
+6. Si todavia no tienes cuenta de GitHub, completa el formulario de registro y crea una.
+7. Cuando GitHub pida autorizar `Cloudflare Workers and Pages`, acepta con `Install & Authorize`.
+
+![Inicio de sesion en GitHub con Google](docs/images/deploy-step-04-github-google.jpeg)
+
+![Autorizacion de Google para GitHub](docs/images/deploy-step-05-google-authorize.jpeg)
+
+![Pantalla de registro de GitHub si aun no tienes cuenta](docs/images/deploy-step-06-github-signup.jpeg)
+
+![Instalar y autorizar Cloudflare Workers and Pages](docs/images/deploy-step-07-install-authorize.jpeg)
+
+8. Volveras a Cloudflare. Comprueba que tu cuenta de GitHub ya aparece en `Git account`.
+9. Deja los valores del proyecto tal como vienen salvo que necesites cambiarlos, y despues pulsa `Deploy`.
+
+![Cuenta de GitHub conectada y lista para desplegar](docs/images/deploy-step-08-deploy.jpeg)
+
+10. Espera a que termine el log de despliegue. Al finalizar, Cloudflare mostrara la URL de tu worker, por ejemplo `https://tu-worker.workers.dev`.
+11. Abre `https://tu-worker.workers.dev/health`.
+12. Guarda el secreto de 6 caracteres que aparece en esa pagina y tambien la URL completa para xDrip+, por ejemplo `https://API_SECRET@tu-worker.workers.dev/api/v1/`.
+
+![Despliegue terminado con la URL del worker visible](docs/images/deploy-step-09-worker-url.jpeg)
+
+![Pagina health mostrando el secreto y la URL para xDrip+](docs/images/deploy-step-10-secret-and-xdrip-url.jpeg)
+
+Si Cloudflare te pide permiso para crear o conectar un repositorio durante la instalacion, aceptalo. Esa conexion es la que permite completar correctamente el flujo de instalacion con un clic.
+
 ## Configurar xDrip+
 
 En `xDrip+`, usa la opción `Nightscout Sync REST API` e introduce:
