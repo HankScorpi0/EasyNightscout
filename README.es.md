@@ -14,10 +14,6 @@ GlucoEasy se centra en lo esencial:
 Version in English: see [README.md](README.md).  
 Guía técnica: ver [README.technical.es.md](README.technical.es.md).
 
-## En Una Frase
-
-GlucoEasy es tu servicio secundario de tranquilidad: cuando falla el principal, sigues teniendo una forma sencilla de seguir conectado con tus apps compatibles con Nightscout, facil de instalar y gratis en la nube.
-
 ## Advertencia Importante
 
 - No es un dispositivo médico.
@@ -49,12 +45,6 @@ Este proyecto es para ti si:
 - No incluye gráficas, informes ni análisis avanzados
 
 Si necesitas la experiencia completa de Nightscout, Nightscout completo sigue siendo la mejor opción.
-
-## Por Que Existe
-
-La idea no es sustituir tu sistema principal.
-
-La idea es que, si el proveedor oficial o tu servicio principal falla, no te quedes sin una via sencilla para seguir usando las apps y herramientas que ya conoces.
 
 ## Despliegue Gratis Mas Rapido
 
@@ -130,18 +120,6 @@ Tambien puedes revisar:
 ```text
 https://tu-worker.workers.dev/api/v1/status.json
 ```
-
-## Por Que Importa Que Funcione Con Nightscout
-
-El valor principal de GlucoEasy no es solo que sea pequeno.
-
-Es que te deja seguir usando lo que ya conoces incluso como servicio secundario:
-
-- apps moviles
-- herramientas de seguimiento
-- integraciones que ya funcionan con Nightscout
-
-Eso reduce muchisimo la friccion y hace mas facil tener un plan B real.
 
 ## Si Algo No Funciona
 
