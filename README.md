@@ -46,9 +46,13 @@ This project is for you if:
 
 If you need the complete Nightscout experience, full Nightscout is still the better fit.
 
-## Fastest Free Deployment
+## Create Your Free Copy
 
-The easiest option is the official Cloudflare flow:
+The easiest way to start is to click here and install GlucoEasy for free.
+
+You do not need to understand what Cloudflare is or know what "deploy" means: just follow the screens and you will end up with a ready-to-use link.
+
+[Install GlucoEasy for free](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite)
 
 <a href="https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite" target="_blank" rel="noopener noreferrer">
   <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" />
@@ -56,9 +60,9 @@ The easiest option is the official Cloudflare flow:
 
 ## Install In 3 Steps
 
-1. Click the `Deploy to Cloudflare` button.
-2. Follow the Cloudflare screens until the deployment finishes.
-3. Open the URL Cloudflare gives you, for example `https://your-worker.workers.dev/health`.
+1. Click `Install GlucoEasy for free` or the button below.
+2. Follow the screens until the setup finishes.
+3. Open the link created for you, for example `https://your-worker.workers.dev/health`.
 
 On the first visit, GlucoEasy creates a 6-character secret code automatically and shows it once. Save it immediately, because you will need it in `xDrip+` or any other compatible app.
 
@@ -73,7 +77,7 @@ https://API_SECRET@your-worker.workers.dev/api/v1/
 Replace:
 
 - `API_SECRET` with your 6-character secret code
-- `your-worker.workers.dev` with your Cloudflare URL
+- `your-worker.workers.dev` with the link created for you
 
 Important:
 
