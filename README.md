@@ -14,8 +14,6 @@ GlucoEasy keeps the essentials:
 Spanish version: see [README.es.md](README.es.md).  
 Technical guide: see [README.technical.md](README.technical.md).
 
-Example of the status page you can use to confirm the service is working:
-
 ![English health page example](docs/images/health-en.png)
 
 ## Important Warning

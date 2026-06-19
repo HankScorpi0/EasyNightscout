@@ -14,8 +14,6 @@ GlucoEasy se centra en lo esencial:
 Version in English: see [README.md](README.md).  
 Guía técnica: ver [README.technical.es.md](README.technical.es.md).
 
-Ejemplo de la pantalla de estado para comprobar que el servicio funciona:
-
 ![Pantalla health en español](docs/images/health-es.png)
 
 ## Advertencia Importante
