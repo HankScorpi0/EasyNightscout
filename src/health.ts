@@ -70,14 +70,14 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     notes: "Notes",
     noNotes: "No notes",
     noTreatments: "No treatments received yet.",
-    noTreatmentsBody: "GlucoEasy will show the most recent Nightscout-compatible treatment here.",
+    noTreatmentsBody: "GlucoEasy will show the most recent Nightscout-compatible treatment here so this service can stay ready as a simple fallback.",
     title: "GlucoEasy",
     status: "Status",
     storedReadings: "Stored readings",
     storedTreatments: "Stored treatments",
     viewStatusJson: "View status JSON",
-    openSource: "Open source project",
-    openSourceBody: "GlucoEasy is published openly on GitHub and keeps compatibility with Nightscout-enabled apps front and center.",
+    openSource: "Secondary service purpose",
+    openSourceBody: "GlucoEasy is designed to be an easy secondary Nightscout-compatible service for apps like xDrip+ and Zukkah, with free Cloudflare deployment.",
     viewRepository: "View repository"
   },
   es: {
@@ -108,14 +108,14 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     notes: "Notas",
     noNotes: "Sin notas",
     noTreatments: "Todavia no se han recibido treatments.",
-    noTreatmentsBody: "GlucoEasy mostrara aqui el treatment compatible con Nightscout mas reciente.",
+    noTreatmentsBody: "GlucoEasy mostrara aqui el treatment compatible con Nightscout mas reciente para que este servicio este listo como respaldo sencillo.",
     title: "GlucoEasy",
     status: "Estado",
     storedReadings: "Lecturas guardadas",
     storedTreatments: "Treatments guardados",
     viewStatusJson: "Ver status JSON",
-    openSource: "Proyecto de codigo abierto",
-    openSourceBody: "GlucoEasy esta publicado abiertamente en GitHub y mantiene como pieza central la compatibilidad con apps que soportan Nightscout.",
+    openSource: "Finalidad del servicio",
+    openSourceBody: "GlucoEasy esta pensado como servicio secundario compatible con Nightscout para apps como xDrip+ y Zukkah, con despliegue gratis en Cloudflare y una instalacion muy simple.",
     viewRepository: "Ver repositorio"
   }
 };

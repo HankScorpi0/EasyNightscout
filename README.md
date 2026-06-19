@@ -1,22 +1,22 @@
 # GlucoEasy
 
-GlucoEasy is a minimal glucose monitoring service you can deploy for free on Cloudflare.
+GlucoEasy is a secondary glucose monitoring service you can deploy for free on Cloudflare.
 
-It was built for a very specific problem: full Nightscout can be harder to deploy, more expensive to keep online, and broader than what many people actually need every day.
+It was built for a very specific case: when your main service or official provider fails, having a lightweight secondary service gives you peace of mind without forcing you into a heavy deployment.
 
 GlucoEasy keeps the essentials:
 
-- receive glucose readings from `xDrip+`
-- receive treatments such as boluses
-- expose a Nightscout-compatible API from day one
-- stay compatible with apps and tools that already support Nightscout
+- act as a fallback when your primary service is down
+- keep exposing a Nightscout-compatible API
+- let you use apps like `xDrip+`, `Zukkah`, and other Nightscout-compatible clients
+- stay very easy to install and free to deploy in the cloud
 
 Spanish version: see [README.es.md](README.es.md).  
 Technical guide: see [README.technical.md](README.technical.md).
 
 ## In One Sentence
 
-GlucoEasy gives you a simple way to keep compatibility with Nightscout-enabled apps for glucose readings and boluses, without the usual deployment overhead.
+GlucoEasy is your peace-of-mind secondary service: when the primary one fails, you still have a Nightscout-compatible layer that is easy to install and free in the cloud.
 
 ## Important Warning
 
@@ -28,10 +28,10 @@ GlucoEasy gives you a simple way to keep compatibility with Nightscout-enabled a
 
 This project is for you if:
 
-- you already use `xDrip+`
+- you want a secondary option when the primary service fails
+- you already use `xDrip+`, `Zukkah`, or any Nightscout-compatible app
+- you want something very easy to install and maintain
 - you want a free cloud deployment
-- you want a simpler alternative to a full Nightscout setup
-- you need compatibility with Nightscout-enabled apps such as `Zukkah`
 - you mainly care about glucose readings, boluses, and broad ecosystem compatibility
 
 ## What It Does
@@ -39,7 +39,7 @@ This project is for you if:
 - Receives glucose readings from `xDrip+`
 - Stores recent readings and treatments
 - Mirrors the Nightscout API shape used by existing clients
-- Works with Nightscout-compatible apps and tools
+- Works as a secondary layer for Nightscout-compatible apps and tools
 - Shows a simple health page in the browser
 
 ## What It Does Not Do
@@ -50,6 +50,12 @@ This project is for you if:
 
 If you need the complete Nightscout experience, full Nightscout is still the better fit.
 
+## Why It Exists
+
+The goal is not to replace your main system.
+
+The goal is to make sure that if your official provider or primary service fails, you still have a simple path to keep using the Nightscout ecosystem you already know.
+
 ## Fastest Free Deployment
 
 The easiest option is the official Cloudflare flow:
@@ -58,13 +64,13 @@ The easiest option is the official Cloudflare flow:
   <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" />
 </a>
 
-## Deploy In 3 Steps
+## Install In 3 Steps
 
 1. Click the `Deploy to Cloudflare` button.
 2. Follow the Cloudflare screens until the deployment finishes.
 3. Open the URL Cloudflare gives you, for example `https://your-worker.workers.dev/health`.
 
-On the first visit, GlucoEasy creates a 6-character `API_SECRET` automatically and shows it once. Save it immediately, because you will need it in `xDrip+`.
+On the first visit, GlucoEasy creates a 6-character `API_SECRET` automatically and shows it once. Save it immediately, because you will need it in `xDrip+` or any compatible client.
 
 ## Configure xDrip+
 
@@ -83,6 +89,16 @@ Important:
 
 - keep `/api/v1/` exactly as shown
 - do not remove the final `/`
+
+## Compatible Apps
+
+Because GlucoEasy keeps Nightscout compatibility, you can connect it to:
+
+- `xDrip+`
+- `Zukkah`
+- other apps or integrations that already speak Nightscout
+
+That is one of its main strengths: you do not need to rebuild your workflow, only add a secondary layer.
 
 ## Check That It Works
 
@@ -119,13 +135,13 @@ https://your-worker.workers.dev/api/v1/status.json
 
 The main value of GlucoEasy is not just that it is smaller.
 
-It is that you can keep using the Nightscout ecosystem you already know:
+It is that you can keep using the ecosystem you already know even as a secondary service:
 
 - mobile apps
 - follower tools
 - integrations that already talk to the Nightscout API
 
-That means less migration friction and a much easier deployment story.
+That means less migration friction and a much more practical fallback plan.
 
 ## If Something Does Not Work
 
