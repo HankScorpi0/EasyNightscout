@@ -54,10 +54,6 @@ No hace falta entender que es Cloudflare ni saber "desplegar" nada: solo sigue l
 
 [Instalar GlucoEasy gratis](https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite)
 
-<a href="https://deploy.workers.cloudflare.com/?url=https%3A%2F%2Fgithub.com%2FHankScorpi0%2FTinyScout-Lite" target="_blank" rel="noopener noreferrer">
-  <img src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare" />
-</a>
-
 ## Instalacion En 3 Pasos
 
 1. Haz clic en `Instalar GlucoEasy gratis` o en el boton de abajo.
