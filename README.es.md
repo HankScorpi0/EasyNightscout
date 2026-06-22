@@ -1,5 +1,13 @@
 # GlucoEasy
 
+Este proyecto nace de algo muy personal.
+
+Mi hijo debutó con diabetes tipo 1 con solo 2 años. Desde entonces, la tecnología forma parte de nuestro día a día: usa Dexcom G7 junto con Tandem, y aunque el servicio oficial suele funcionar bien, la sensación de quedarte sin acceso justo en el momento en que más lo necesitas pesa mucho cuando detrás de la pantalla está la salud de tu hijo.
+
+GlucoEasy nace precisamente de esa necesidad de tener un respaldo. De saber que, si el servicio oficial falla, sigo teniendo una segunda vía disponible. No sustituye nada: simplemente me da algo que para mí vale muchísimo, tranquilidad.
+
+Además, me permite conectar con aplicaciones más completas dentro del ecosistema de la diabetes, como `Zukkah`, `xDrip+` y también apps de smartwatch, siempre que sean compatibles con Nightscout.
+
 GlucoEasy es un servicio secundario de monitorización de glucosa que puedes desplegar gratis en Cloudflare.
 
 Nace para un caso muy concreto: cuando tu servicio principal o el proveedor oficial falla, tener una segunda opción funcionando te da tranquilidad sin obligarte a mantener una instalación compleja.

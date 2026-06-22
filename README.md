@@ -1,5 +1,13 @@
 # GlucoEasy
 
+This project was born from something deeply personal.
+
+My son was diagnosed with type 1 diabetes when he was only 2 years old. Since then, technology has become part of our everyday life: he uses Dexcom G7 together with Tandem, and although the official provider service usually works well, losing access right when you need it most feels very different when your child's health is on the other side of the screen.
+
+GlucoEasy was born from that need for a backup. From wanting to know that if the official service fails, I still have a second path available. It does not replace the official system; it simply gives me something that matters enormously to me: peace of mind.
+
+It also lets us connect with richer diabetes apps such as `Zukkah`, `xDrip+`, and even smartwatch apps, as long as they are compatible with Nightscout.
+
 GlucoEasy is a secondary glucose monitoring service you can deploy for free on Cloudflare.
 
 It was built for a very specific case: when your main service or official provider fails, having a simple second option gives you peace of mind without forcing you into a heavy deployment.
