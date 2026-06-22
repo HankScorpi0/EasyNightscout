@@ -410,12 +410,11 @@ describe("api", () => {
     expect(response.status).toBe(200);
     const html = await response.text();
     expect(html).toContain("GlucoEasy");
-    expect(html).toContain("Stored readings");
     expect(html).toContain("Latest treatment");
     expect(html).toContain("Correction Bolus");
     expect(html).toContain('class="reading treatment-reading">1.2 <span>U</span>');
     expect(html).toContain("Received:");
-    expect(html).toMatch(/Stored treatments<\/p>\s*<p class="status-value">1<\/p>/);
+    expect(html).toContain("View status data");
     expect(html).toContain("window.setTimeout(() =>");
     expect(html).toContain("window.location.reload()");
     expect(html).toContain("45000");
@@ -500,8 +499,7 @@ describe("api", () => {
     const html = await response.text();
     expect(html).toContain("GlucoEasy");
     expect(html).toContain("Ultimo tratamiento");
-    expect(html).toContain("Lecturas guardadas");
-    expect(html).toMatch(/Tratamientos guardados<\/p>\s*<p class="status-value">1<\/p>/);
+    expect(html).toContain("Ver datos de estado");
     expect(html).toContain('class="reading treatment-reading">1.2 <span>U</span>');
     expect(html).toContain("Recibido hace:");
   });

@@ -33,8 +33,6 @@ interface HealthCopy {
   noTreatmentsBody: string;
   title: string;
   status: string;
-  storedReadings: string;
-  storedTreatments: string;
   viewStatusJson: string;
   openSource: string;
   openSourceBody: string;
@@ -73,8 +71,6 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     noTreatmentsBody: "GlucoEasy will show the most recent treatment here so this service can stay ready as a simple fallback.",
     title: "GlucoEasy",
     status: "Status",
-    storedReadings: "Stored readings",
-    storedTreatments: "Stored treatments",
     viewStatusJson: "View status data",
     openSource: "Secondary service purpose",
     openSourceBody: "GlucoEasy is designed as an easy secondary service for apps like xDrip+ and Zukkah, with free Cloudflare deployment.",
@@ -111,8 +107,6 @@ const COPY: Record<HealthLocale, HealthCopy> = {
     noTreatmentsBody: "GlucoEasy mostrara aqui el tratamiento mas reciente para que este servicio este listo como respaldo sencillo.",
     title: "GlucoEasy",
     status: "Estado",
-    storedReadings: "Lecturas guardadas",
-    storedTreatments: "Tratamientos guardados",
     viewStatusJson: "Ver datos de estado",
     openSource: "Finalidad del servicio",
     openSourceBody: "GlucoEasy esta pensado como servicio secundario para apps como xDrip+ y Zukkah, con despliegue gratis en Cloudflare y una instalacion muy simple.",
@@ -533,12 +527,6 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         font-weight: 800;
         letter-spacing: -0.02em;
       }
-      .status-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.8rem;
-        margin-top: 0.2rem;
-      }
       .status-card {
         padding: 1rem;
         border-radius: 16px;
@@ -552,13 +540,6 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-      }
-      .status-value {
-        margin: 0;
-        font-size: 1.6rem;
-        font-weight: 900;
-        letter-spacing: -0.04em;
-        color: var(--text);
       }
       .repo-copy {
         display: flex;
@@ -824,9 +805,6 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
         .status-panel-top {
           align-items: flex-start;
         }
-        .status-grid {
-          grid-template-columns: 1fr;
-        }
         .repo-card {
           align-items: flex-start;
           flex-direction: column;
@@ -863,16 +841,6 @@ export function renderHealthPage(view: HealthViewModel, locale: HealthLocale = "
               <p class="system-name">${copy.title}</p>
               <div class="status-badge">${copy.status}</div>
             </div>
-          </div>
-        </div>
-        <div class="status-grid">
-          <div class="status-card">
-            <p class="status-label">${copy.storedReadings}</p>
-            <p class="status-value">${view.count}</p>
-          </div>
-          <div class="status-card">
-            <p class="status-label">${copy.storedTreatments}</p>
-            <p class="status-value">${view.treatmentCount ?? 0}</p>
           </div>
         </div>
         <div class="status-actions">
